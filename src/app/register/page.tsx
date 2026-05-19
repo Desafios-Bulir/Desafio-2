@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Smartphone, Eye, EyeOff } from "lucide-react";
+import { Smartphone, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Navigation } from "@/components/ui/Navigation";
 import Footer from "@/components/Footer";
 import { authService } from "@/services/auth.service";
@@ -87,15 +87,17 @@ export default function RegisterPage() {
           <div className="flex rounded-xl bg-gray-200 p-1">
             <button
               type="button"
+              disabled={loading}
               onClick={() => setRole("CLIENT")}
-              className={`flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all ${role === "CLIENT" ? "bg-[#052a5e] text-white shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+              className={`flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all ${role === "CLIENT" ? "bg-[#052a5e] text-white shadow-sm" : "text-gray-500 hover:text-gray-700"} disabled:opacity-50`}
             >
               Quero contratar
             </button>
             <button
               type="button"
+              disabled={loading}
               onClick={() => setRole("PROVIDER")}
-              className={`flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all ${role === "PROVIDER" ? "bg-[#052a5e] text-white shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+              className={`flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all ${role === "PROVIDER" ? "bg-[#052a5e] text-white shadow-sm" : "text-gray-500 hover:text-gray-700"} disabled:opacity-50`}
             >
               Sou prestador
             </button>
@@ -114,10 +116,11 @@ export default function RegisterPage() {
                 type="text"
                 autoComplete="name"
                 required
+                disabled={loading}
                 placeholder="Ex: Gilson Chipombo"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-[#052a5e] focus:ring-2 focus:ring-blue-100"
+                className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-[#052a5e] focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100 disabled:text-gray-500"
               />
             </div>
 
@@ -131,10 +134,11 @@ export default function RegisterPage() {
                 name="phone"
                 type="tel"
                 required
+                disabled={loading}
                 placeholder="9XX XXX XXX"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-[#052a5e] focus:ring-2 focus:ring-blue-100"
+                className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-[#052a5e] focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100 disabled:text-gray-500"
               />
             </div>
 
@@ -150,10 +154,11 @@ export default function RegisterPage() {
                   type="text"
                   inputMode="numeric"
                   required
+                  disabled={loading}
                   placeholder="123456789"
                   value={formData.nif}
                   onChange={handleChange}
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-[#052a5e] focus:ring-2 focus:ring-blue-100"
+                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-[#052a5e] focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100 disabled:text-gray-500"
                 />
               </div>
             )}
@@ -169,10 +174,11 @@ export default function RegisterPage() {
                 type="email"
                 autoComplete="email"
                 required
+                disabled={loading}
                 placeholder="gilson@gmail.com"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-[#052a5e] focus:ring-2 focus:ring-blue-100"
+                className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-[#052a5e] focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100 disabled:text-gray-500"
               />
             </div>
 
@@ -188,17 +194,19 @@ export default function RegisterPage() {
                   type={showPassword ? "text" : "password"}
                   autoComplete="new-password"
                   required
+                  disabled={loading}
                   minLength={6}
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 pr-11 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-[#052a5e] focus:ring-2 focus:ring-blue-100"
+                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 pr-11 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-[#052a5e] focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100 disabled:text-gray-500"
                 />
                 <button
                   type="button"
                   id="toggle-password"
+                  disabled={loading}
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
                   aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                 >
                   {showPassword ? (
@@ -216,9 +224,16 @@ export default function RegisterPage() {
               type="submit"
               id="btn-criar-conta"
               disabled={loading}
-              className="mt-1 w-full rounded-lg bg-[#052a5e] py-3 text-sm font-bold text-white hover:bg-[#031b3e] transition-colors active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="mt-1 w-full flex items-center justify-center gap-2 rounded-lg bg-[#052a5e] py-3 text-sm font-bold text-white hover:bg-[#031b3e] transition-colors active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Criando conta..." : "Criar conta"}
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Criando conta...
+                </>
+              ) : (
+                "Criar conta"
+              )}
             </button>
           </form>
 

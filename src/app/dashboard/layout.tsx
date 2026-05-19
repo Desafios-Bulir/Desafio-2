@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Smartphone, LayoutDashboard, Users, CalendarDays, Wallet, History, ChevronUp } from "lucide-react";
+import { Smartphone, LayoutDashboard, Users, CalendarDays, Wallet, History, ChevronUp, Briefcase } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Visão Geral", href: "/dashboard", icon: LayoutDashboard },
   { label: "Clientes", href: "/dashboard/clientes", icon: Users },
+  { label: "Serviços", href: "/dashboard/services", icon: Briefcase },
   { label: "Reservas", href: "/dashboard/reservas", icon: CalendarDays, badge: 3 },
   { label: "Carteira", href: "/dashboard/carteira", icon: Wallet },
   { label: "Histórico", href: "/dashboard/historico", icon: History },

@@ -76,10 +76,8 @@ function AvatarGroup() {
 export default function Home() {
   return (
     <main className="min-h-screen bg-white">
-      {/* Navigation */}
       <Navigation />
 
-      {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-white via-blue-50/30 to-sky-100/50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid min-h-[calc(100vh-65px)] grid-cols-1 items-center gap-12 py-16 lg:grid-cols-2 lg:py-24">
@@ -94,13 +92,11 @@ export default function Home() {
                 num piscar de olhos
               </h2>
 
-              {/* Subtitle */}
               <p className="max-w-md text-base leading-relaxed text-gray-500 sm:text-lg">
                 Precisa de um ladrilhador, cabeleireiro ou um outro serviço? Conecte-se com prestadores de serviços de
                 confiança perto de você, tudo pelo celular.
               </p>
 
-              {/* CTA Buttons */}
               <div className="flex flex-wrap gap-3">
                 <Link
                   href="/register"
@@ -119,7 +115,6 @@ export default function Home() {
                 </Link>
               </div>
 
-              {/* Social Proof */}
               <div className="flex items-center gap-3">
                 <AvatarGroup />
                 <div>
@@ -130,7 +125,7 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Testimonial */}
+
               <div className="flex flex-col gap-3 rounded-2xl border border-gray-100 bg-white/80 p-4 shadow-sm backdrop-blur-sm max-w-sm">
                 <StarRating />
                 <p className="text-sm leading-relaxed text-gray-600">
@@ -147,7 +142,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Popular Services */}
               <div className="flex flex-col gap-3">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
                   Serviços Populares
@@ -187,9 +181,8 @@ export default function Home() {
               </div>
             </div>
 
-            {/* ─── RIGHT COLUMN — Phone Mockup ─── */}
             <div className="relative flex items-center justify-center lg:justify-end">
-              {/* Decorative glow */}
+      
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="h-[500px] w-[500px] rounded-full bg-blue-200/30 blur-3xl" />
               </div>
@@ -210,7 +203,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How It Works Section */}
       <section id="como-funciona" className="bg-white py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">

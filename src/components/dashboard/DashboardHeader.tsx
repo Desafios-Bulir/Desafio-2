@@ -1,4 +1,5 @@
-import { Bell, Search } from "lucide-react";
+import { Bell, Search, Menu } from "lucide-react";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 interface DashboardHeaderProps {
   title: string;
@@ -13,9 +14,19 @@ export function DashboardHeader({
   searchPlaceholder = "Buscar...",
   actionButton,
 }: DashboardHeaderProps) {
+  const { toggleMobileSidebar } = useSidebar();
+
   return (
     <header className="flex items-center justify-between border-b border-gray-100 bg-white px-6 py-4 flex-shrink-0">
-      <h1 className="text-lg font-bold text-gray-900">{title}</h1>
+      <div className="flex items-center gap-3">
+        <button 
+          className="md:hidden p-2 -ml-2 text-gray-500 hover:text-gray-900"
+          onClick={toggleMobileSidebar}
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+        <h1 className="text-lg font-bold text-gray-900">{title}</h1>
+      </div>
       <div className="flex items-center gap-3">
         {showSearch && (
           <div className="relative hidden sm:block">

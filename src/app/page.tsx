@@ -11,37 +11,6 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-function ServiceCard({ label,
-  bgColor,
-  Icon,
-  imgSrc,
-}: {
-  label: string;
-  bgColor: string;
-  Icon: React.ElementType;
-  imgSrc: string;
-}) {
-  return (
-    <div className="group relative flex flex-col items-center gap-2 cursor-pointer">
-      <div
-        className={`relative h-20 w-20 overflow-hidden rounded-2xl ${bgColor} flex items-center justify-center shadow-sm transition-transform group-hover:-translate-y-1`}
-      >
-        {imgSrc ? (
-          <Image
-            src={imgSrc}
-            alt={label}
-            fill
-            className="object-cover"
-            sizes="80px"
-          />
-        ) : (
-          <Icon className="h-8 w-8 text-white" />
-        )}
-      </div>
-      <span className="text-xs font-medium text-gray-700">{label}</span>
-    </div>
-  );
-}
 
 // --- Star Rating ---
 function StarRating({ count = 5 }: { count?: number }) {
@@ -84,12 +53,11 @@ export default function Home() {
 
         
             <div className="flex flex-col gap-6">
-
     
               <h2 className="text-2xl font-extrabold leading-tight tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
                 Encontre o{" "}
                 <span className="text-[#052a5e]">profissional ideal</span>{" "}
-                num piscar de olhos
+                rapidamente
               </h2>
 
               <p className="max-w-md text-base leading-relaxed text-gray-500 sm:text-lg">
@@ -124,61 +92,6 @@ export default function Home() {
                   </p>
                 </div>
               </div>
-
-
-              <div className="flex flex-col gap-3 rounded-2xl border border-gray-100 bg-white/80 p-4 shadow-sm backdrop-blur-sm max-w-sm">
-                <StarRating />
-                <p className="text-sm leading-relaxed text-gray-600">
-                  "Achei uma lavadeira em 10 minutos. O serviço foi muito bem feito!"
-                </p>
-                <div className="flex items-center gap-2">
-                  <div className="h-7 w-7 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-600">
-                    C
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold text-gray-800">Gilson Chipombo</p>
-                    <p className="text-xs text-gray-400">Cliente desde 2023</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
-                  Serviços Populares
-                </p>
-                <div className="flex items-end gap-4 flex-wrap">
-                  <ServiceCard
-                    label="Ladrilhador"
-                    bgColor="bg-gray-100"
-                    Icon={Wrench}
-                    imgSrc="https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=160&h=160&fit=crop"
-                  />
-                  <ServiceCard
-                    label="Cabeleireiro"
-                    bgColor="bg-gray-100"
-                    Icon={Scissors}
-                    imgSrc="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=160&h=160&fit=crop"
-                  />
-                  <ServiceCard
-                    label="Lavanderia"
-                    bgColor="bg-gray-100"
-                    Icon={WashingMachine}
-                    imgSrc="https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?w=160&h=160&fit=crop"
-                  />
-                  <Link
-                    href="/services"
-                    className="flex flex-col items-center gap-2 group"
-                    id="ver-todos"
-                  >
-                    <div className="flex h-20 w-20 items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 text-gray-400 transition-all group-hover:border-blue-300 group-hover:text-blue-500">
-                      <Plus className="h-6 w-6" />
-                    </div>
-                    <span className="text-xs font-medium text-gray-500 group-hover:text-blue-500 transition-colors">
-                      Ver Todos
-                    </span>
-                  </Link>
-                </div>
-              </div>
             </div>
 
             <div className="relative flex items-center justify-center lg:justify-end">
@@ -197,6 +110,121 @@ export default function Home() {
                   priority
                 />
               </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* Populares e Avaliações Carousel */}
+      <section className="bg-gray-50 py-20 overflow-hidden">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-extrabold text-gray-900">
+              Serviços Populares & Feedbacks
+            </h2>
+            <p className="mt-3 text-gray-500">
+              Deslize para ver os serviços mais requisitados e o que nossos clientes dizem.
+            </p>
+          </div>
+
+          <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-8 pt-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            {/* Service Cards */}
+            <div className="snap-center shrink-0">
+              <div className="w-64 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                  <Wrench className="h-6 w-6" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900">Ladrilhador</h3>
+                <p className="mt-2 text-sm text-gray-500 flex-1">Instalação e reparo de pisos com acabamento perfeito.</p>
+                <div className="mt-4 flex items-center gap-2">
+                  <StarRating count={5} />
+                  <span className="text-xs font-medium text-gray-600">4.9 (120)</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="snap-center shrink-0">
+              <div className="w-64 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+                  <Scissors className="h-6 w-6" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900">Cabeleireiro</h3>
+                <p className="mt-2 text-sm text-gray-500 flex-1">Cortes, penteados e tratamentos no conforto de casa.</p>
+                <div className="mt-4 flex items-center gap-2">
+                  <StarRating count={5} />
+                  <span className="text-xs font-medium text-gray-600">4.8 (85)</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="snap-center shrink-0">
+              <div className="w-64 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-teal-50 text-teal-600">
+                  <WashingMachine className="h-6 w-6" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900">Lavanderia</h3>
+                <p className="mt-2 text-sm text-gray-500 flex-1">Lavagem e passagem de roupas com entrega rápida.</p>
+                <div className="mt-4 flex items-center gap-2">
+                  <StarRating count={5} />
+                  <span className="text-xs font-medium text-gray-600">5.0 (200)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonials */}
+            <div className="snap-center shrink-0">
+              <div className="w-80 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm h-full flex flex-col justify-between">
+                <div>
+                  <StarRating count={5} />
+                  <p className="mt-4 text-sm italic leading-relaxed text-gray-600">
+                    "Achei uma lavadeira em 10 minutos. O serviço foi muito bem feito, recomendo totalmente a plataforma!"
+                  </p>
+                </div>
+                <div className="mt-6 flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-sm font-bold text-blue-600">
+                    C
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Gilson Chipombo</p>
+                    <p className="text-xs text-gray-400">Cliente desde 2023</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="snap-center shrink-0">
+              <div className="w-80 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm h-full flex flex-col justify-between">
+                <div>
+                  <StarRating count={5} />
+                  <p className="mt-4 text-sm italic leading-relaxed text-gray-600">
+                    "Nunca foi tão fácil encontrar alguém de confiança para o meu cabelo. O ServiFind facilitou muito minha vida."
+                  </p>
+                </div>
+                <div className="mt-6 flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-sm font-bold text-indigo-600">
+                    M
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Maria Silva</p>
+                    <p className="text-xs text-gray-400">Cliente desde 2024</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="snap-center shrink-0 flex items-center justify-center pr-4">
+              <Link
+                href="/services"
+                className="flex flex-col items-center justify-center gap-3 group h-full px-6"
+              >
+                <div className="flex h-16 w-16 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-400 shadow-sm transition-all group-hover:border-blue-300 group-hover:text-blue-500 group-hover:-translate-y-1">
+                  <ArrowRight className="h-6 w-6" />
+                </div>
+                <span className="text-sm font-semibold text-gray-600 group-hover:text-blue-500 transition-colors">
+                  Ver Todos
+                </span>
+              </Link>
             </div>
 
           </div>

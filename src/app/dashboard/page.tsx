@@ -87,7 +87,7 @@ export default function DashboardPage() {
             icon={Wallet}
             iconBg="bg-purple-50 text-purple-500"
             label="Saldo Disponível"
-            value="R$ 1.250,00"
+            value="KZ 1.250,00"
             badge="Sacar"
             badgeStyle="bg-blue-50 text-blue-600 cursor-pointer"
           />

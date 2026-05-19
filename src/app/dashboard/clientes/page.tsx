@@ -4,7 +4,7 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { Users, UserPlus, Star, Mail, Phone, MessageSquare, MoreHorizontal } from "lucide-react";
 
-// ── Types ──
+
 type Client = {
   id: string;
   name: string;
@@ -13,50 +13,45 @@ type Client = {
   phone: string;
   totalBookings: number;
   lastBooking: string;
-  rating: number;
 };
 
-// ── Data ──
 const clients: Client[] = [
   {
     id: "1",
     name: "João Fernandes",
     avatar: "J",
     email: "joao.fernandes@email.com",
-    phone: "(11) 98765-4321",
+    phone: "(244) 923 379 993",
     totalBookings: 5,
-    lastBooking: "Hoje, 14:00",
-    rating: 5.0,
+    lastBooking: "Hoje, 14:00"
   },
   {
     id: "2",
     name: "Ana Costa",
     avatar: "A",
     email: "ana.costa@email.com",
-    phone: "(11) 91234-5678",
+    phone: "(244) 941 354 268",
     totalBookings: 2,
     lastBooking: "Amanhã, 09:00",
-    rating: 4.8,
   },
   {
     id: "3",
     name: "Carlos Souza",
     avatar: "C",
     email: "carlos.souza@email.com",
-    phone: "(11) 99876-5432",
+    phone: "(244) 944 658 412",
     totalBookings: 12,
-    lastBooking: "12 de Outubro",
-    rating: 5.0,
+    lastBooking: "12 de Outubro"
   },
   {
     id: "4",
     name: "Marta Oliveira",
     avatar: "M",
     email: "marta.oliveira@email.com",
-    phone: "(11) 97777-8888",
+    phone: "(244) 949 196 058",
     totalBookings: 1,
     lastBooking: "10 de Outubro",
-    rating: 4.5,
+   
   },
 ];
 
@@ -139,10 +134,6 @@ export default function ClientesPage() {
                         </div>
                         <div>
                           <p className="font-semibold text-gray-900">{client.name}</p>
-                          <div className="flex items-center gap-1 text-xs text-amber-500 font-medium">
-                            <Star className="h-3 w-3 fill-amber-500" />
-                            {client.rating.toFixed(1)}
-                          </div>
                         </div>
                       </div>
                     </td>

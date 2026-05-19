@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { useSidebar } from "@/contexts/SidebarContext";
 
 const navItems = [
-  { label: "Visão Geral", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Clientes", href: "/dashboard/clientes", icon: Users },
   { label: "Serviços", href: "/dashboard/services", icon: Briefcase },
   { label: "Reservas", href: "/dashboard/reservas", icon: CalendarDays, badge: 3 },
@@ -21,7 +21,7 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Mobile Backdrop */}
+      
       {isMobileSidebarOpen && (
         <div 
           className="fixed inset-0 z-40 bg-gray-900/50 backdrop-blur-sm md:hidden"
@@ -61,7 +61,7 @@ export function Sidebar() {
               <Link
                 key={href}
                 href={href}
-                onClick={() => setIsMobileSidebarOpen(false)} // Close sidebar on mobile after navigating
+                onClick={() => setIsMobileSidebarOpen(false)} 
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                   isActive

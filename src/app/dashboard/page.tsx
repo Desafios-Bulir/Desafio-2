@@ -3,6 +3,7 @@
 import { Plus, Calendar, MoreHorizontal, Users, Wallet } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { StatCard } from "@/components/dashboard/StatCard";
+import { useAuthStore } from "@/store/auth.store";
 
 // ── Types ──
 type BookingStatus = "Confirmado" | "Pendente" | "Cancelado";
@@ -37,6 +38,9 @@ const statusStyles: Record<BookingStatus, string> = {
 
 // ── Page ──
 export default function DashboardPage() {
+  const user = useAuthStore((state) => state.user);
+  const firstName = user?.fullName ? user.fullName.split(" ")[0] : "Maria";
+
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <DashboardHeader
@@ -51,7 +55,7 @@ export default function DashboardPage() {
         {/* Greeting Row */}
         <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-extrabold text-gray-900">Bom dia, Maria!</h2>
+            <h2 className="text-2xl font-extrabold text-gray-900">Bom dia, {firstName}!</h2>
             <p className="mt-1 text-sm text-gray-500">
               Aqui está o resumo dos seus serviços para hoje.
             </p>

@@ -2,12 +2,19 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { Navigation } from "@/components/ui/Navigation";
 import Footer from "@/components/Footer";
+import { authService } from "@/services/auth.service";
+import { useAuthStore } from "@/store/auth.store";
+import { toast } from "sonner";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { setAuth } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -17,12 +24,32 @@ export default function LoginPage() {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // TODO: integrate with API
-    console.log(formData);
-    // Simular redirecionamento para o dashboard
-    window.location.href = "/dashboard";
+    setLoading(true);
+
+    try {
+      const response = await authService.login(formData);
+
+      // Salvar token e usuário no store
+      setAuth(response.access_token, {
+        id: response.user.id,
+        fullName: response.user.fullName,
+        role: response.user.role,
+      });
+
+      toast.success(`Bem-vindo de volta, ${response.user.fullName}!`);
+      router.push("/dashboard");
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Erro ao iniciar sessão";
+      toast.error(errorMessage);
+      console.error("Erro ao fazer login:", error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -57,10 +84,11 @@ export default function LoginPage() {
                   type="email"
                   autoComplete="email"
                   required
+                  disabled={loading}
                   placeholder="gilson@gmail.com"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-[#052a5e] focus:ring-2 focus:ring-blue-100"
+                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-[#052a5e] focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100 disabled:text-gray-500"
                 />
               </div>
 
@@ -84,15 +112,17 @@ export default function LoginPage() {
                     type={showPassword ? "text" : "password"}
                     autoComplete="current-password"
                     required
+                    disabled={loading}
                     placeholder="••••••••"
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 pr-11 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-[#052a5e] focus:ring-2 focus:ring-blue-100"
+                    className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 pr-11 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-[#052a5e] focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100 disabled:text-gray-500"
                   />
                   <button
                     type="button"
+                    disabled={loading}
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
                     aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                   >
                     {showPassword ? (
@@ -108,9 +138,17 @@ export default function LoginPage() {
               <button
                 type="submit"
                 id="btn-entrar"
-                className="mt-2 w-full rounded-lg bg-[#052a5e] py-3 text-sm font-bold text-white shadow-md hover:bg-[#031b3e] transition-all active:scale-[0.99]"
+                disabled={loading}
+                className="mt-2 w-full flex items-center justify-center gap-2 rounded-lg bg-[#052a5e] py-3 text-sm font-bold text-white shadow-md hover:bg-[#031b3e] transition-all active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Entrar no ServiFind
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Iniciando sessão...
+                  </>
+                ) : (
+                  "Entrar no ServiFind"
+                )}
               </button>
             </form>
 
@@ -128,7 +166,7 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-        <Footer/>
+      <Footer />
     </>
   );
 }

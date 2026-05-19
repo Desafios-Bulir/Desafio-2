@@ -5,9 +5,10 @@ import { usePathname } from "next/navigation";
 import { Smartphone, LayoutDashboard, Users, CalendarDays, Wallet, History, ChevronUp, Briefcase, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/contexts/SidebarContext";
+import { useAuthStore } from "@/store/auth.store";
 
 const navItems = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Visão Geral", href: "/dashboard", icon: LayoutDashboard },
   { label: "Clientes", href: "/dashboard/clientes", icon: Users },
   { label: "Serviços", href: "/dashboard/services", icon: Briefcase },
   { label: "Reservas", href: "/dashboard/reservas", icon: CalendarDays, badge: 3 },
@@ -18,10 +19,16 @@ const navItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const { isMobileSidebarOpen, setIsMobileSidebarOpen } = useSidebar();
+  const user = useAuthStore((state) => state.user);
+
+  const displayName = user?.fullName || "Gilson Chipombo";
+  const displayRole = user?.role === "PROVIDER" ? "Prestador" : user?.role === "CLIENT" ? "Cliente" : "Programador";
+  const initial = displayName.charAt(0).toUpperCase();
 
   return (
     <>
       
+      {/* Mobile Backdrop */}
       {isMobileSidebarOpen && (
         <div 
           className="fixed inset-0 z-40 bg-gray-900/50 backdrop-blur-sm md:hidden"
@@ -61,7 +68,7 @@ export function Sidebar() {
               <Link
                 key={href}
                 href={href}
-                onClick={() => setIsMobileSidebarOpen(false)} 
+                onClick={() => setIsMobileSidebarOpen(false)} // Close sidebar on mobile after navigating
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                   isActive
@@ -85,11 +92,11 @@ export function Sidebar() {
         <div className="border-t border-white/10 px-4 py-4">
           <button className="flex w-full items-center gap-3 rounded-lg px-2 py-2 hover:bg-white/5 transition-colors">
             <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-sm font-bold text-white flex-shrink-0">
-              M
+              {initial}
             </div>
             <div className="flex-1 text-left min-w-0">
-              <p className="text-sm font-semibold text-white truncate">Gilson Chipombo</p>
-              <p className="text-xs text-blue-200 truncate">Programador</p>
+              <p className="text-sm font-semibold text-white truncate">{displayName}</p>
+              <p className="text-xs text-blue-200 truncate">{displayRole}</p>
             </div>
             <ChevronUp className="h-3.5 w-3.5 text-blue-300 flex-shrink-0" />
           </button>

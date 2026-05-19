@@ -143,7 +143,7 @@ export default function Home() {
                 <h3 className="text-lg font-bold text-gray-900">Ladrilhador</h3>
                 <p className="mt-2 text-sm text-gray-500 flex-1">Instalação e reparo de pisos com acabamento perfeito.</p>
                 <div className="mt-4 flex items-center gap-2">
-                  <StarRating count={5} />
+                  <StarRating count={4} />
                   <span className="text-xs font-medium text-gray-600">4.9 (120)</span>
                 </div>
               </div>
@@ -248,15 +248,15 @@ export default function Home() {
           </div>
           <div className="grid gap-8 md:grid-cols-3">
             {[
-              { step: "01", title: "Busque o serviço", desc: "Pesquise por categoria ou descreva o que precisa.", color: "bg-blue-50 text-blue-600" },
-              { step: "02", title: "Escolha o profissional", desc: "Veja avaliações, preços e disponibilidade em tempo real.", color: "bg-amber-50 text-amber-600" },
-              { step: "03", title: "Contrate com segurança", desc: "Pague pela plataforma e avalie após o serviço.", color: "bg-green-50 text-green-600" },
+              { step: "01", title: "Busque o serviço", desc: "Pesquise por categoria ou descreva o que precisa.", color: "bg-[#052a5e] text-white" },
+              { step: "02", title: "Escolha o profissional", desc: "Veja avaliações, preços e disponibilidade em tempo real.", color: "bg-[#052a5e] text-white" },
+              { step: "03", title: "Contrate com segurança", desc: "Pague pela plataforma e avalie após o serviço.", color: "bg-[#052a5e] text-white" },
             ].map(({ step, title, desc, color }) => (
-              <div key={step} className="flex flex-col gap-4 rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
+              <div key={step} className="flex flex-col gap-4 rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow bg-black">
                 <div className={`inline-flex h-12 w-12 items-center justify-center rounded-xl text-lg font-extrabold ${color}`}>
                   {step}
                 </div>
-                <h3 className="text-lg font-bold text-gray-900">{title}</h3>
+                <h3 className="text-lg font-bold text-white">{title}</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
               </div>
             ))}

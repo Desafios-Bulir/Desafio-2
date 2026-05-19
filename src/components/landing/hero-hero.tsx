@@ -30,7 +30,7 @@ export function HeroHero() {
 
         {/* Logo/Heading */}
         <div className="mb-6 flex items-center justify-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-amber-400/90 text-xl font-bold text-slate-950">
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-900 text-xl font-bold text-white">
             B
           </div>
           <span className="text-3xl font-bold">Bulir</span>
@@ -49,7 +49,7 @@ export function HeroHero() {
 
         {/* CTA Buttons */}
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Button asChild size="lg" className="bg-amber-400 text-slate-950 hover:bg-amber-500">
+          <Button asChild size="lg" className="bg-slate-950 text-white hover:bg-slate-800">
             <Link href="#featured-services">
               Começar agora
               <ArrowRight className="h-4 w-4" />

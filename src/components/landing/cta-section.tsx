@@ -8,7 +8,7 @@ export function CtaSection() {
     <section className="rounded-[2rem] border border-slate-200/80 bg-slate-950 px-6 py-10 text-white shadow-2xl shadow-slate-950/20 sm:px-8 lg:px-10">
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
         <div className="space-y-4">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-300">
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-400">
             Próximo passo
           </p>
           <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -21,7 +21,7 @@ export function CtaSection() {
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
-          <Button asChild size="lg" className="bg-white text-slate-950 hover:bg-slate-100">
+          <Button asChild size="lg" className="bg-slate-950 text-white hover:bg-slate-800">
             <Link href="#featured-services">
               Ver serviços
               <ArrowRight className="h-4 w-4" />

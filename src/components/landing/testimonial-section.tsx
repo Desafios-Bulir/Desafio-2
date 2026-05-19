@@ -22,7 +22,7 @@ export function TestimonialSection() {
       {/* Content */}
       <div className="space-y-6">
         <div className="space-y-2">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-600">
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-700">
             Depoimento
           </p>
           <h2 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
@@ -36,7 +36,7 @@ export function TestimonialSection() {
         </p>
 
         <div className="flex gap-3 pt-2">
-          <Button asChild size="lg" className="bg-amber-400 text-slate-950 hover:bg-amber-500">
+          <Button asChild size="lg" className="bg-slate-950 text-white hover:bg-slate-800">
             <Link href="#featured-services">
               Explorar serviços
               <ArrowRight className="h-4 w-4" />

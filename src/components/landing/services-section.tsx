@@ -1,12 +1,13 @@
-import { Users } from "lucide-react";
+import { ArrowRight, Briefcase } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { featuredServices } from "./landing-data";
 
 export function ServicesSection() {
   return (
-    <section id="featured-services" className="space-y-6">
+    <section id="featured-services" className="space-y-8">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-600">
@@ -21,19 +22,33 @@ export function ServicesSection() {
         </p>
       </div>
 
-      <div className="grid gap-5 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-3">
         {featuredServices.map((service) => (
           <Card
             key={service.title}
-            className="border-slate-200/80 bg-white/90 shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
+            className="group border border-slate-200/60 bg-white shadow-sm hover:shadow-lg transition-all duration-300 hover:border-amber-200 overflow-hidden"
           >
-            <CardHeader>
-              <CardTitle className="text-xl">{service.title}</CardTitle>
+            <CardHeader className="pb-4">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100">
+                  <Briefcase className="h-5 w-5 text-amber-600" />
+                </div>
+              </div>
+              <CardTitle className="text-lg">{service.title}</CardTitle>
               <CardDescription className="text-sm leading-6">{service.description}</CardDescription>
             </CardHeader>
-            <CardContent className="flex items-center justify-between pb-5 pt-0">
-              <p className="text-sm font-medium text-amber-600">{service.price}</p>
-              <Users className="h-5 w-5 text-slate-400" />
+            <CardContent className="space-y-4 pb-6">
+              <div className="pt-2 border-t border-slate-100">
+                <p className="text-sm font-semibold text-amber-600">{service.price}</p>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full group-hover:bg-amber-50 group-hover:text-amber-600 group-hover:border-amber-200"
+              >
+                Ver detalhes
+                <ArrowRight className="h-3.5 w-3.5 ml-2" />
+              </Button>
             </CardContent>
           </Card>
         ))}

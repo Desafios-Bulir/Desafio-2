@@ -54,7 +54,7 @@ export function Navigation() {
           <Button
             asChild
             size="sm"
-            className="bg-amber-400 text-slate-950 hover:bg-amber-500 whitespace-nowrap"
+            className="bg-slate-950 text-white hover:bg-slate-800 whitespace-nowrap"
           >
             <Link href="/#featured-services">
               Explorar

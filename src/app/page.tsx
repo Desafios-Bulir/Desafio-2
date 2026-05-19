@@ -11,9 +11,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-// --- Service Card Component ---
-function ServiceCard({
-  label,
+function ServiceCard({ label,
   bgColor,
   Icon,
   imgSrc,
@@ -58,8 +56,8 @@ function StarRating({ count = 5 }: { count?: number }) {
 
 // --- Avatar Group ---
 function AvatarGroup() {
-  const colors = ["bg-rose-400", "bg-amber-400", "bg-teal-400", "bg-indigo-400"];
-  const initials = ["A", "B", "C", "D"];
+  const colors = ["bg-[#052a5e]", "bg-teal-400", "bg-indigo-400"];
+  const initials = ["G", "B", "D"];
   return (
     <div className="flex -space-x-2">
       {colors.map((c, i) => (
@@ -86,22 +84,19 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid min-h-[calc(100vh-65px)] grid-cols-1 items-center gap-12 py-16 lg:grid-cols-2 lg:py-24">
 
-            {/* ─── LEFT COLUMN ─── */}
+        
             <div className="flex flex-col gap-6">
 
     
-
-              {/* Heading */}
-              <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
+              <h2 className="text-2xl font-extrabold leading-tight tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
                 Encontre o{" "}
-                <span className="text-blue-500">profissional ideal</span>{" "}
+                <span className="text-[#052a5e]">profissional ideal</span>{" "}
                 num piscar de olhos
-              </h1>
+              </h2>
 
               {/* Subtitle */}
               <p className="max-w-md text-base leading-relaxed text-gray-500 sm:text-lg">
-                Precisa de um ladrilhador, cabeleireiro ou alguém para lavar
-                suas roupas? Conecte-se com prestadores de serviços de
+                Precisa de um ladrilhador, cabeleireiro ou um outro serviço? Conecte-se com prestadores de serviços de
                 confiança perto de você, tudo pelo celular.
               </p>
 
@@ -110,7 +105,7 @@ export default function Home() {
                 <Link
                   href="/register"
                   id="cta-baixar"
-                  className="inline-flex items-center gap-2 rounded-full bg-blue-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 hover:bg-blue-600 transition-all hover:-translate-y-0.5"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#052a5e] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 hover:bg-blue-600 transition-all hover:-translate-y-0.5"
                 >
                   <Smartphone className="h-4 w-4" />
                   Baixar Aplicativo
@@ -139,15 +134,14 @@ export default function Home() {
               <div className="flex flex-col gap-3 rounded-2xl border border-gray-100 bg-white/80 p-4 shadow-sm backdrop-blur-sm max-w-sm">
                 <StarRating />
                 <p className="text-sm leading-relaxed text-gray-600">
-                  "Achei um encanador em 10 minutos. O serviço foi impecável
-                  e muito rápido!"
+                  "Achei uma lavadeira em 10 minutos. O serviço foi muito bem feito!"
                 </p>
                 <div className="flex items-center gap-2">
                   <div className="h-7 w-7 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-600">
                     C
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-gray-800">Carlos Souza</p>
+                    <p className="text-xs font-semibold text-gray-800">Gilson Chipombo</p>
                     <p className="text-xs text-gray-400">Cliente desde 2023</p>
                   </div>
                 </div>
@@ -246,7 +240,7 @@ export default function Home() {
       </section>
 
       {/* CTA Banner */}
-      <section id="seja-prestador" className="bg-blue-500 py-16">
+      <section id="seja-prestador" className="bg-[#052a5e] py-16">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
           <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
             Pronto para começar?

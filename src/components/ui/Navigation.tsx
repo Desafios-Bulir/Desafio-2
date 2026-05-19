@@ -17,13 +17,13 @@ export function Navigation() {
 
         {/* Nav Links */}
         <nav className="hidden items-center gap-8 md:flex">
-          <Link href="#como-funciona" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
+          <Link href="#como-funciona" className="text-sm font-medium text-black-500 hover:text-blue-500 transition-colors">
             Como Funciona
           </Link>
-          <Link href="#profissionais" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
+          <Link href="#profissionais" className="text-sm font-medium text-black-500 hover:text-blue-500 transition-colors">
             Profissionais
           </Link>
-          <Link href="#seja-prestador" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
+          <Link href="#seja-prestador" className="text-sm font-medium text-black-500 hover:text-blue-500 transition-colors">
             Seja um Prestador
           </Link>
         </nav>
@@ -32,13 +32,13 @@ export function Navigation() {
         <div className="flex items-center gap-3">
           <Link
             href="/login"
-            className="text-sm font-semibold text-blue-500 hover:text-blue-600 transition-colors"
+            className="text-sm font-semibold text-black-500 hover:text-blue-600 transition-colors"
           >
             Entrar
           </Link>
           <Link
             href="/register"
-            className="rounded-full bg-blue-500 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-600 transition-colors"
+            className="rounded-full bg-[#052a5e] px-5 py-2 text-sm font-semibold text-white hover:bg-blue-600 transition-colors"
           >
             Cadastre-se
           </Link>

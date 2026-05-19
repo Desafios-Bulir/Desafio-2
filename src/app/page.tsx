@@ -48,8 +48,12 @@ export default function Home() {
     <main className="min-h-screen bg-white">
       <Navigation />
 
-      <section className="relative overflow-hidden bg-gradient-to-br from-white via-blue-50/30 to-sky-100/50">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section 
+        className="relative overflow-hidden bg-cover bg-center bg-fixed"
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1600&q=80')" }}
+      >
+        <div className="absolute inset-0 bg-white/90 backdrop-blur-sm lg:bg-transparent lg:bg-gradient-to-r lg:from-white/95 lg:via-white/80 lg:to-white/10"></div>
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 items-center gap-12 pt-12 pb-16 lg:grid-cols-2 lg:pt-16 lg:pb-24">
 
         

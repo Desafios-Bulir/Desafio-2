@@ -108,7 +108,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 id="btn-entrar"
-                className="mt-2 w-full rounded-lg bg-[#052a5e] py-3 text-sm font-bold text-white shadow-md hover:bg-black transition-all active:scale-[0.99]"
+                className="mt-2 w-full rounded-lg bg-[#052a5e] py-3 text-sm font-bold text-white shadow-md hover:bg-[#031b3e] transition-all active:scale-[0.99]"
               >
                 Entrar no ServiFind
               </button>

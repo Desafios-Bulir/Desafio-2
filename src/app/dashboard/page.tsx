@@ -58,7 +58,7 @@ export default function DashboardPage() {
           </div>
           <button
             id="btn-nova-reserva"
-            className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-600 transition-colors shadow-sm"
+            className="flex items-center gap-2 rounded-lg bg-[#052a5e] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#031b3e] transition-colors shadow-sm"
           >
             <Plus className="h-4 w-4" />
             Nova Reserva Manual

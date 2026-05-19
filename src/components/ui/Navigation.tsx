@@ -41,13 +41,13 @@ export function Navigation() {
           </Link>
           <Link
             href="/login"
-            className="rounded-full bg-[#052a5e] px-5 py-2 text-sm font-semibold text-white hover:bg-blue-600 transition-colors"
+            className="rounded-full bg-[#052a5e] px-5 py-2 text-sm font-semibold text-white hover:bg-[#031b3e] transition-colors"
           >
             Login
           </Link>
           <Link
             href="/register"
-            className="rounded-full bg-[#052a5e] px-5 py-2 text-sm font-semibold text-white hover:bg-blue-600 transition-colors"
+            className="rounded-full bg-[#052a5e] px-5 py-2 text-sm font-semibold text-white hover:bg-[#031b3e] transition-colors"
           >
             Cadastre-se
           </Link>
@@ -98,7 +98,7 @@ export function Navigation() {
             </Link>
             <Link
               href="/register"
-              className="text-center rounded-full bg-[#052a5e] px-5 py-3 text-base font-semibold text-white hover:bg-blue-600 transition-colors"
+              className="text-center rounded-full bg-[#052a5e] px-5 py-3 text-base font-semibold text-white hover:bg-[#031b3e] transition-colors"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Cadastre-se

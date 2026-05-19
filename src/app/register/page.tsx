@@ -146,7 +146,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               id="btn-criar-conta"
-              className="mt-1 w-full rounded-lg bg-[#052a5e] py-3 text-sm font-bold text-white hover:bg-black transition-colors active:scale-[0.99]"
+              className="mt-1 w-full rounded-lg bg-[#052a5e] py-3 text-sm font-bold text-white hover:bg-[#031b3e] transition-colors active:scale-[0.99]"
             >
               Criar conta
             </button>

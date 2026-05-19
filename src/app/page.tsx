@@ -74,7 +74,7 @@ export default function Home() {
                 <Link
                   href="/register"
                   id="cta-baixar"
-                  className="inline-flex items-center gap-2 rounded-full bg-[#052a5e] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 hover:bg-blue-600 transition-all hover:-translate-y-0.5"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#052a5e] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200 hover:bg-[#031b3e] transition-all hover:-translate-y-0.5"
                 >
                   <Smartphone className="h-4 w-4" />
                   Baixar Aplicativo
@@ -93,7 +93,7 @@ export default function Home() {
                 <div>
                   <StarRating />
                   <p className="mt-0.5 text-xs font-medium text-gray-500">
-                    +10.000 clientes satisfeitos
+                    +2.000 clientes satisfeitos
                   </p>
                 </div>
               </div>
@@ -201,17 +201,17 @@ export default function Home() {
             <div className="snap-center shrink-0">
               <div className="w-80 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm h-full flex flex-col justify-between">
                 <div>
-                  <StarRating count={5} />
+                  <StarRating count={4} />
                   <p className="mt-4 text-sm italic leading-relaxed text-gray-600">
                     "Nunca foi tão fácil encontrar alguém de confiança para o meu cabelo. O ServiFind facilitou muito minha vida."
                   </p>
                 </div>
                 <div className="mt-6 flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-sm font-bold text-indigo-600">
-                    M
+                    D
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">Maria Silva</p>
+                    <p className="text-sm font-semibold text-gray-900">Domingos Gemano</p>
                     <p className="text-xs text-gray-400">Cliente desde 2024</p>
                   </div>
                 </div>
@@ -220,7 +220,7 @@ export default function Home() {
             
             <div className="snap-center shrink-0 flex items-center justify-center pr-4">
               <Link
-                href="/services"
+                href="/register"
                 className="flex flex-col items-center justify-center gap-3 group h-full px-6"
               >
                 <div className="flex h-16 w-16 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-400 shadow-sm transition-all group-hover:border-blue-300 group-hover:text-blue-500 group-hover:-translate-y-1">

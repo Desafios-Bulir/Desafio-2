@@ -196,9 +196,9 @@ export default function Home() {
 
               <div className="relative z-10 w-full max-w-[500px]">
                 <Image
-                  src="/phone-mockup.png"
+                  src="/phone.png"
                   alt="ServiFind app — encontre profissionais perto de você"
-                  width={400}
+                  width={700}
                   height={450}
                   className="w-full drop-shadow-2xl"
                   priority

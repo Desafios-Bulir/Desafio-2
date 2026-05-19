@@ -9,7 +9,7 @@ const navItems = [
   { label: "Visão Geral", href: "/dashboard", icon: LayoutDashboard },
   { label: "Clientes", href: "/dashboard/clientes", icon: Users },
   { label: "Reservas", href: "/dashboard/reservas", icon: CalendarDays, badge: 3 },
-  { label: "Saldo", href: "/dashboard/saldo", icon: Wallet },
+  { label: "Carteira", href: "/dashboard/carteira", icon: Wallet },
   { label: "Histórico", href: "/dashboard/historico", icon: History },
 ];
 
@@ -62,8 +62,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               M
             </div>
             <div className="flex-1 text-left min-w-0">
-              <p className="text-sm font-semibold text-gray-900 truncate">Maria Silva</p>
-              <p className="text-xs text-gray-400 truncate">Ladrilhadora</p>
+              <p className="text-sm font-semibold text-gray-900 truncate">Gilson Chipombo</p>
+              <p className="text-xs text-gray-400 truncate">Programador</p>
             </div>
             <ChevronUp className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
           </button>

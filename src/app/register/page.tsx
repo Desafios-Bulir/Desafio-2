@@ -2,13 +2,21 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Smartphone, Eye, EyeOff } from "lucide-react";
 import { Navigation } from "@/components/ui/Navigation";
 import Footer from "@/components/Footer";
+import { authService } from "@/services/auth.service";
+import { useAuthStore } from "@/store/auth.store";
+import { toast } from "sonner";
 
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const { setAuth } = useAuthStore();
+  
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [role, setRole] = useState<"CLIENT" | "PROVIDER">("CLIENT");
   const [formData, setFormData] = useState({
     name: "",
@@ -22,9 +30,43 @@ export default function RegisterPage() {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    console.log(formData);
+    setLoading(true);
+
+    try {
+      const payload = {
+        fullName: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        password: formData.password,
+        ...(role === "PROVIDER" && { nif: formData.nif }),
+      };
+
+      const response =
+        role === "CLIENT"
+          ? await authService.registerClient(payload)
+          : await authService.registerProvider(payload);
+
+      // Salvar token e usuário no store
+      setAuth(response.access_token, {
+        id: response.user.id,
+        fullName: response.user.fullName,
+        role: response.user.role,
+      });
+
+      toast.success(`Bem-vindo, ${response.user.fullName}!`);
+      router.push("/dashboard");
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Erro ao criar conta";
+      toast.error(errorMessage);
+      console.error("Erro ao registrar:", error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (<>
@@ -173,9 +215,10 @@ export default function RegisterPage() {
             <button
               type="submit"
               id="btn-criar-conta"
-              className="mt-1 w-full rounded-lg bg-[#052a5e] py-3 text-sm font-bold text-white hover:bg-[#031b3e] transition-colors active:scale-[0.99]"
+              disabled={loading}
+              className="mt-1 w-full rounded-lg bg-[#052a5e] py-3 text-sm font-bold text-white hover:bg-[#031b3e] transition-colors active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Criar conta
+              {loading ? "Criando conta..." : "Criar conta"}
             </button>
           </form>
 

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { Navigation } from "@/components/ui/Navigation";
+import Footer from "@/components/Footer";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -127,6 +128,7 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+        <Footer/>
     </>
   );
 }

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Navigation } from "@/components/ui/Navigation";
+import Footer from "@/components/Footer";
 import {
   Smartphone,
   Star,
@@ -49,7 +50,7 @@ export default function Home() {
 
       <section className="relative overflow-hidden bg-gradient-to-br from-white via-blue-50/30 to-sky-100/50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid min-h-[calc(100vh-65px)] grid-cols-1 items-center gap-12 py-16 lg:grid-cols-2 lg:py-24">
+          <div className="grid grid-cols-1 items-center gap-12 pt-12 pb-16 lg:grid-cols-2 lg:pt-16 lg:pb-24">
 
         
             <div className="flex flex-col gap-6">
@@ -286,19 +287,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-100 bg-white py-8">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-500 text-white">
-              <Smartphone className="h-4 w-4" />
-            </div>
-            <span className="font-bold text-gray-900">ServiFind</span>
-          </div>
-          <p className="text-sm text-gray-400">
-            © {new Date().getFullYear()} ServiFind. Todos os direitos reservados.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }

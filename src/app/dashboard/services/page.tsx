@@ -6,6 +6,8 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { useAuthStore } from "@/store/auth.store";
 import { servicesService, ServiceResponse } from "@/services/services.service";
+import { bookingsService } from "@/services/bookings.service";
+import { walletService } from "@/services/wallet.service";
 import { Briefcase, Plus, Star, Wrench, Clock, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -15,17 +17,30 @@ export default function ServicesPage() {
 
   const [servicesList, setServicesList] = useState<ServiceResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Client balance & booking modal states
+  const [balance, setBalance] = useState<number | null>(null);
+  const [selectedService, setSelectedService] = useState<ServiceResponse | null>(null);
+  const [scheduledDate, setScheduledDate] = useState("");
+  const [scheduledTime, setScheduledTime] = useState("");
+  const [bookingLoading, setBookingLoading] = useState(false);
 
   useEffect(() => {
-    async function fetchServices() {
+    async function loadData() {
       try {
         setLoading(true);
-        const data = isProvider
-          ? await servicesService.getMyServices()
-          : await servicesService.getAll();
-        setServicesList(data);
+        const [servicesData, balData] = await Promise.all([
+          isProvider
+            ? servicesService.getMyServices()
+            : servicesService.getAll(),
+          !isProvider ? walletService.getBalance() : Promise.resolve({ balance: 0 }),
+        ]);
+        setServicesList(servicesData);
+        if (!isProvider) {
+          setBalance(balData.balance);
+        }
       } catch (error) {
-        console.error("Erro ao carregar serviços:", error);
+        console.error("Erro ao carregar dados:", error);
         toast.error("Erro ao carregar os serviços.");
       } finally {
         setLoading(false);
@@ -33,7 +48,7 @@ export default function ServicesPage() {
     }
 
     if (user) {
-      fetchServices();
+      loadData();
     }
   }, [user, isProvider]);
 
@@ -46,6 +61,43 @@ export default function ServicesPage() {
     } catch (error) {
       console.error("Erro ao eliminar serviço:", error);
       toast.error("Erro ao eliminar o serviço.");
+    }
+  }
+
+  async function handleConfirmBooking() {
+    if (!selectedService) return;
+
+    // Combine date and time
+    const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
+    if (scheduledDateTime < new Date()) {
+      toast.error("A data e hora do agendamento não pode ser no passado.");
+      return;
+    }
+
+    try {
+      setBookingLoading(true);
+      await bookingsService.createBooking({
+        serviceId: selectedService.id,
+        scheduledAt: scheduledDateTime.toISOString(),
+      });
+      
+      toast.success("Serviço contratado com sucesso!");
+      
+      // Update local client balance
+      if (balance !== null) {
+        setBalance((prev) => (prev !== null ? prev - selectedService.price : null));
+      }
+      
+      // Reset modal state
+      setSelectedService(null);
+      setScheduledDate("");
+      setScheduledTime("");
+    } catch (error: any) {
+      console.error("Erro ao contratar serviço:", error);
+      const errorMsg = error.response?.data?.message || "Ocorreu um erro ao contratar o serviço.";
+      toast.error(Array.isArray(errorMsg) ? errorMsg[0] : errorMsg);
+    } finally {
+      setBookingLoading(false);
     }
   }
 
@@ -93,14 +145,25 @@ export default function ServicesPage() {
             badge="Excelente"
             badgeStyle="bg-amber-50 text-amber-600"
           />
-          <StatCard
-            icon={Wrench}
-            iconBg="bg-green-50 text-green-500"
-            label="Mais Solicitado"
-            value="N/A"
-            badge="Sem reservas"
-            badgeStyle="bg-green-50 text-green-600"
-          />
+          {!isProvider ? (
+            <StatCard
+              icon={Wrench}
+              iconBg="bg-purple-50 text-purple-500"
+              label="Meu Saldo"
+              value={`KZ ${(balance || 0).toLocaleString("pt-PT", { minimumFractionDigits: 2 })}`}
+              badge="Disponível"
+              badgeStyle="bg-green-50 text-green-600"
+            />
+          ) : (
+            <StatCard
+              icon={Wrench}
+              iconBg="bg-green-50 text-green-500"
+              label="Mais Solicitado"
+              value="N/A"
+              badge="Sem reservas"
+              badgeStyle="bg-green-50 text-green-600"
+            />
+          )}
         </div>
 
         {/* Services List */}
@@ -119,13 +182,13 @@ export default function ServicesPage() {
                   <th className="px-6 py-4 font-semibold uppercase tracking-wider text-gray-400 text-xs">Preço</th>
                   <th className="px-6 py-4 font-semibold uppercase tracking-wider text-gray-400 text-xs">Duração</th>
                   <th className="px-6 py-4 font-semibold uppercase tracking-wider text-gray-400 text-xs">Status</th>
-                  {isProvider && <th className="px-6 py-4 text-right font-semibold uppercase tracking-wider text-gray-400 text-xs">Ações</th>}
+                  <th className="px-6 py-4 text-right font-semibold uppercase tracking-wider text-gray-400 text-xs">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {servicesList.length === 0 ? (
                   <tr>
-                    <td colSpan={isProvider ? 5 : 4} className="px-6 py-12 text-center text-gray-500 font-medium">
+                    <td colSpan={5} className="px-6 py-12 text-center text-gray-500 font-medium">
                       Nenhum serviço registado.
                     </td>
                   </tr>
@@ -171,9 +234,9 @@ export default function ServicesPage() {
                       </td>
 
                       {/* Ações */}
-                      {isProvider && (
-                        <td className="px-6 py-4 text-right">
-                          <div className="flex items-center justify-end gap-2">
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {isProvider ? (
                             <button
                               onClick={() => handleDelete(service.id)}
                               className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
@@ -181,9 +244,22 @@ export default function ServicesPage() {
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
-                          </div>
-                        </td>
-                      )}
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setSelectedService(service);
+                                const tomorrow = new Date();
+                                tomorrow.setDate(tomorrow.getDate() + 1);
+                                setScheduledDate(tomorrow.toISOString().split("T")[0]);
+                                setScheduledTime("10:00");
+                              }}
+                              className="rounded-lg bg-[#052a5e] px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-[#031b3e] transition-colors"
+                            >
+                              Contratar
+                            </button>
+                          )}
+                        </div>
+                      </td>
 
                     </tr>
                   ))
@@ -194,6 +270,100 @@ export default function ServicesPage() {
         </div>
 
       </div>
+
+      {/* Booking Modal */}
+      {selectedService && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl border border-gray-100">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+              <h3 className="text-lg font-bold text-[#052a5e]">Contratar Serviço</h3>
+              <button
+                onClick={() => setSelectedService(null)}
+                className="text-gray-400 hover:text-gray-600 font-bold text-lg"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="my-4 flex flex-col gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Serviço</p>
+                <p className="text-base font-bold text-gray-900">{selectedService.name}</p>
+                <p className="text-xs text-gray-500 line-clamp-2 mt-0.5">{selectedService.description}</p>
+              </div>
+
+              <div className="flex justify-between border-t border-b border-gray-50 py-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Preço do Serviço</p>
+                  <p className="text-lg font-bold text-[#1e3a8a]">
+                    KZ {selectedService.price.toLocaleString("pt-PT", { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Seu Saldo</p>
+                  <p className={`text-lg font-bold ${balance !== null && balance >= selectedService.price ? 'text-green-600' : 'text-red-500'}`}>
+                    KZ {balance !== null ? balance.toLocaleString("pt-PT", { minimumFractionDigits: 2 }) : "0,00"}
+                  </p>
+                </div>
+              </div>
+
+              {balance !== null && balance < selectedService.price && (
+                <div className="rounded-xl bg-red-50 p-3 text-xs text-red-600 border border-red-100 font-medium">
+                  Aviso: Saldo insuficiente para contratar este serviço.
+                </div>
+              )}
+
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Data do Agendamento</label>
+                  <input
+                    type="date"
+                    required
+                    min={new Date().toISOString().split("T")[0]}
+                    value={scheduledDate}
+                    onChange={(e) => setScheduledDate(e.target.value)}
+                    className="w-full rounded-xl border border-gray-200 py-3 px-4 text-sm text-gray-900 outline-none focus:border-[#052a5e] focus:ring-2 focus:ring-blue-100"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Hora do Agendamento</label>
+                  <input
+                    type="time"
+                    required
+                    value={scheduledTime}
+                    onChange={(e) => setScheduledTime(e.target.value)}
+                    className="w-full rounded-xl border border-gray-200 py-3 px-4 text-sm text-gray-900 outline-none focus:border-[#052a5e] focus:ring-2 focus:ring-blue-100"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 border-t border-gray-100 pt-4">
+              <button
+                onClick={() => setSelectedService(null)}
+                className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+              >
+                Cancelar
+              </button>
+              <button
+                disabled={bookingLoading || (balance !== null && balance < selectedService.price) || !scheduledDate || !scheduledTime}
+                onClick={handleConfirmBooking}
+                className="flex items-center gap-2 rounded-xl bg-[#052a5e] px-5 py-2.5 text-sm font-bold text-white shadow-md hover:bg-[#031b3e] disabled:opacity-50"
+              >
+                {bookingLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    A processar...
+                  </>
+                ) : (
+                  "Confirmar Contratação"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

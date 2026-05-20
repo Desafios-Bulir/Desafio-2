@@ -1,45 +1,101 @@
 "use client";
 
-import { Plus, Calendar, MoreHorizontal, Users, Wallet } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Plus, Calendar, MoreHorizontal, Users, Wallet, Loader2 } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { useAuthStore } from "@/store/auth.store";
+import { bookingsService, BookingResponse } from "@/services/bookings.service";
+import { walletService } from "@/services/wallet.service";
+import { toast } from "sonner";
 
-// ── Types ──
-type BookingStatus = "Confirmado" | "Pendente" | "Cancelado";
-
-type Booking = {
-  id: number;
-  name: string;
-  service: string;
-  avatar: string;
-  datetime: string;
-  status: BookingStatus;
+const getAvatarColor = (name: string) => {
+  const colors = [
+    "bg-indigo-100 text-indigo-700",
+    "bg-rose-100 text-rose-700",
+    "bg-amber-100 text-amber-700",
+    "bg-teal-100 text-teal-700",
+    "bg-blue-100 text-blue-700",
+    "bg-purple-100 text-purple-700",
+  ];
+  const charCode = name.charCodeAt(0) || 0;
+  return colors[charCode % colors.length];
 };
 
-// ── Data ──
-const upcomingBookings: Booking[] = [
-  { id: 1, name: "João Fernandes", service: "Reforma de Banheiro", avatar: "J", datetime: "Hoje, 14:00", status: "Confirmado" },
-  { id: 2, name: "Ana Costa", service: "Troca de Piso", avatar: "A", datetime: "Amanhã, 09:00", status: "Pendente" },
-  { id: 3, name: "Carlos Souza", service: "Orçamento", avatar: "C", datetime: "Qua, 15:30", status: "Confirmado" },
-];
+const getFormattedDate = (dateStr: string) => {
+  const d = new Date(dateStr);
+  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
 
-const avatarColors: Record<string, string> = {
-  J: "bg-indigo-100 text-indigo-700",
-  A: "bg-rose-100 text-rose-700",
-  C: "bg-amber-100 text-amber-700",
+  if (d.toDateString() === today.toDateString()) {
+    return `Hoje, ${d.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })}`;
+  } else if (d.toDateString() === tomorrow.toDateString()) {
+    return `Amanhã, ${d.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })}`;
+  } else {
+    return d.toLocaleString("pt-PT", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
 };
 
-const statusStyles: Record<BookingStatus, string> = {
-  Confirmado: "bg-blue-100 text-blue-700",
-  Pendente: "bg-amber-100 text-amber-700",
-  Cancelado: "bg-red-100 text-red-600",
-};
-
-// ── Page ──
 export default function DashboardPage() {
   const user = useAuthStore((state) => state.user);
+  const isProvider = user?.role === "PROVIDER";
   const firstName = user?.fullName ? user.fullName.split(" ")[0] : "Maria";
+
+  const [loading, setLoading] = useState(true);
+  const [balance, setBalance] = useState(0);
+  const [bookings, setBookings] = useState<BookingResponse[]>([]);
+
+  useEffect(() => {
+    async function loadDashboardData() {
+      try {
+        setLoading(true);
+        const [balData, bookingsData] = await Promise.all([
+          walletService.getBalance(),
+          isProvider
+            ? bookingsService.getProviderBookings()
+            : bookingsService.getMyBookings(),
+        ]);
+        setBalance(balData.balance);
+        setBookings(bookingsData);
+      } catch (error) {
+        console.error("Erro ao carregar dados do dashboard:", error);
+        toast.error("Erro ao carregar os dados do painel.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (user) {
+      loadDashboardData();
+    }
+  }, [user, isProvider]);
+
+  // Compute stats
+  const todayStr = new Date().toDateString();
+  const todayBookingsCount = bookings.filter(
+    (b) => new Date(b.scheduledAt).toDateString() === todayStr
+  ).length;
+
+  const uniqueClientsCount = new Set(
+    bookings.map((b) => b.clientId).filter(Boolean)
+  ).size;
+
+  // Limit to 5 upcoming bookings
+  const upcomingBookings = bookings.slice(0, 5);
+
+  if (loading) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-gray-50">
+        <Loader2 className="h-8 w-8 animate-spin text-[#052a5e]" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
@@ -60,32 +116,34 @@ export default function DashboardPage() {
               Aqui está o resumo dos seus serviços para hoje.
             </p>
           </div>
-          <button
-            id="btn-nova-reserva"
-            className="flex items-center gap-2 rounded-lg bg-[#052a5e] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#031b3e] transition-colors shadow-sm"
-          >
-            <Plus className="h-4 w-4" />
-            Nova Reserva Manual
-          </button>
+          {isProvider && (
+            <button
+              id="btn-nova-reserva"
+              className="flex items-center gap-2 rounded-lg bg-[#052a5e] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#031b3e] transition-colors shadow-sm"
+            >
+              <Plus className="h-4 w-4" />
+              Nova Reserva Manual
+            </button>
+          )}
         </div>
 
         {/* Stats Grid */}
-        <div className={`mb-6 grid grid-cols-1 gap-4 ${user?.role === 'PROVIDER' ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
+        <div className={`mb-6 grid grid-cols-1 gap-4 ${isProvider ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
           <StatCard
             icon={Calendar}
             iconBg="bg-blue-50 text-blue-500"
             label="Reservas Hoje"
-            value="4"
+            value={todayBookingsCount.toString()}
             badge="Hoje"
             badgeStyle="bg-blue-50 text-blue-600"
           />
-          {user?.role === "PROVIDER" && (
+          {isProvider && (
             <StatCard
               icon={Users}
               iconBg="bg-teal-50 text-teal-500"
               label="Total de Clientes"
-              value="142"
-              badge="+12% este mês"
+              value={uniqueClientsCount.toString()}
+              badge="Ativos"
               badgeStyle="bg-green-50 text-green-600"
             />
           )}
@@ -93,8 +151,8 @@ export default function DashboardPage() {
             icon={Wallet}
             iconBg="bg-purple-50 text-purple-500"
             label="Saldo Disponível"
-            value="KZ 1.250,00"
-            badge="Sacar"
+            value={`KZ ${balance.toLocaleString("pt-PT", { minimumFractionDigits: 2 })}`}
+            badge={isProvider ? "Sacar" : "Carteira"}
             badgeStyle="bg-blue-50 text-blue-600 cursor-pointer"
           />
         </div>
@@ -102,39 +160,74 @@ export default function DashboardPage() {
         {/* Upcoming Bookings */}
         <div className="rounded-2xl border border-gray-100 bg-white shadow-sm">
           <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
-            <h3 className="text-base font-bold text-gray-900">Próximas Reservas</h3>
-            <button className="text-sm font-semibold text-blue-500 hover:text-blue-600 transition-colors">
-              Ver todas
-            </button>
+            <h3 className="text-base font-bold text-gray-900">
+              {isProvider ? "Próximas Reservas" : "Minhas Reservas Recentes"}
+            </h3>
+            <span className="text-xs text-gray-400 font-medium">
+              Total: {bookings.length}
+            </span>
           </div>
 
           <ul className="divide-y divide-gray-50">
-            {upcomingBookings.map((booking) => (
-              <li
-                key={booking.id}
-                className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50/60 transition-colors"
-              >
-                <div
-                  className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold ${avatarColors[booking.avatar] ?? "bg-gray-100 text-gray-600"}`}
-                >
-                  {booking.avatar}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-900">{booking.name}</p>
-                  <p className="text-xs text-gray-400">{booking.service}</p>
-                </div>
-                <div className="hidden items-center gap-1.5 sm:flex text-sm text-gray-500">
-                  <Calendar className="h-3.5 w-3.5 text-gray-400" />
-                  {booking.datetime}
-                </div>
-                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[booking.status]}`}>
-                  {booking.status}
-                </span>
-                <button className="flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
-                  <MoreHorizontal className="h-4 w-4" />
-                </button>
+            {upcomingBookings.length === 0 ? (
+              <li className="px-5 py-8 text-center text-gray-500 font-medium">
+                Nenhuma reserva registada até ao momento.
               </li>
-            ))}
+            ) : (
+              upcomingBookings.map((booking) => {
+                const displayName = isProvider
+                  ? booking.client?.fullName || "Cliente Geral"
+                  : booking.service?.name || "Serviço Geral";
+                const displayDetail = isProvider
+                  ? booking.service?.name || "Serviço Geral"
+                  : "Reserva agendada";
+                
+                const avatar = displayName.charAt(0).toUpperCase();
+                const colorClass = getAvatarColor(displayName);
+
+                let statusLabel = "Pendente";
+                let statusStyle = "bg-amber-100 text-amber-700";
+
+                if (booking.status === "COMPLETED") {
+                  statusLabel = "Confirmado";
+                  statusStyle = "bg-blue-100 text-blue-700";
+                } else if (booking.status === "CANCELED") {
+                  statusLabel = "Cancelado";
+                  statusStyle = "bg-red-100 text-red-600";
+                }
+
+                return (
+                  <li
+                    key={booking.id}
+                    className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50/60 transition-colors"
+                  >
+                    <div
+                      className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold ${colorClass}`}
+                    >
+                      {avatar}
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-900">{displayName}</p>
+                      <p className="text-xs text-gray-400 font-medium">{displayDetail}</p>
+                    </div>
+                    
+                    <div className="hidden items-center gap-1.5 sm:flex text-sm text-gray-500 font-medium">
+                      <Calendar className="h-3.5 w-3.5 text-gray-400" />
+                      {getFormattedDate(booking.scheduledAt)}
+                    </div>
+                    
+                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyle}`}>
+                      {statusLabel}
+                    </span>
+                    
+                    <button className="flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </button>
+                  </li>
+                );
+              })
+            )}
           </ul>
         </div>
       </div>

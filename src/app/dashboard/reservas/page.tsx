@@ -1,44 +1,127 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
-import { Plus, MapPin, Banknote, ChevronLeft, ChevronRight } from "lucide-react";
-import Image from "next/image";
-
-// ── Components ──
-function Tab({ label, badge, isActive }: { label: string; badge?: number; isActive?: boolean }) {
-  return (
-    <button
-      className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
-        isActive
-          ? "border-[#1e3a8a] text-[#1e3a8a]"
-          : "border-transparent text-gray-500 hover:text-gray-700"
-      }`}
-    >
-      {label}
-      {badge !== undefined && (
-        <span
-          className={`flex h-5 items-center justify-center rounded-full px-2 text-xs font-bold ${
-            isActive ? "bg-[#1e3a8a] text-white" : "bg-gray-100 text-gray-500"
-          }`}
-        >
-          {badge}
-        </span>
-      )}
-    </button>
-  );
-}
+import { useAuthStore } from "@/store/auth.store";
+import { bookingsService, BookingResponse } from "@/services/bookings.service";
+import { 
+  Plus, 
+  MapPin, 
+  Banknote, 
+  ChevronLeft, 
+  ChevronRight, 
+  Loader2, 
+  Calendar,
+  XCircle
+} from "lucide-react";
+import { toast } from "sonner";
 
 export default function ReservasPage() {
+  const user = useAuthStore((state) => state.user);
+  const isProvider = user?.role === "PROVIDER";
+
+  const [bookings, setBookings] = useState<BookingResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<"upcoming" | "pending" | "completed" | "canceled">("upcoming");
+
+  useEffect(() => {
+    async function loadBookings() {
+      try {
+        setLoading(true);
+        const data = isProvider
+          ? await bookingsService.getProviderBookings()
+          : await bookingsService.getMyBookings();
+        setBookings(data);
+      } catch (error) {
+        console.error("Erro ao carregar reservas:", error);
+        toast.error("Erro ao carregar as reservas.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    if (user) {
+      loadBookings();
+    }
+  }, [user, isProvider]);
+
+  async function handleCancel(id: string) {
+    if (!confirm("Tem a certeza que deseja cancelar esta reserva?")) return;
+    try {
+      await bookingsService.cancelBooking(id);
+      toast.success("Reserva cancelada com sucesso!");
+      // Update local state to mark booking as CANCELED
+      setBookings((prev) =>
+        prev.map((b) => (b.id === id ? { ...b, status: "CANCELED" } : b))
+      );
+    } catch (error) {
+      console.error("Erro ao cancelar reserva:", error);
+      toast.error("Erro ao cancelar a reserva.");
+    }
+  }
+
+  // Grouping bookings based on status/dates
+  const now = new Date();
+  
+  const upcomingBookings = bookings.filter(
+    (b) => (b.status === "PENDING" || b.status === "COMPLETED") && new Date(b.scheduledAt) >= now
+  );
+  
+  const pendingBookings = bookings.filter((b) => b.status === "PENDING");
+  const completedBookings = bookings.filter((b) => b.status === "COMPLETED");
+  const canceledBookings = bookings.filter((b) => b.status === "CANCELED");
+
+  // Determine which list to display
+  let displayList: BookingResponse[] = [];
+  if (activeTab === "upcoming") displayList = upcomingBookings;
+  else if (activeTab === "pending") displayList = pendingBookings;
+  else if (activeTab === "completed") displayList = completedBookings;
+  else if (activeTab === "canceled") displayList = canceledBookings;
+
+  // Weekly stats calculation
+  const statsConfirmed = completedBookings.length;
+  const statsPending = pendingBookings.length;
+  const statsCanceled = canceledBookings.length;
+  
+  // Calculate total expected earnings/payments
+  const totalValue = bookings
+    .filter((b) => b.status === "COMPLETED" || b.status === "PENDING")
+    .reduce((sum, b) => sum + (b.service?.price || 0), 0);
+
+  const getFormattedTime = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return d.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" });
+  };
+
+  const getFormattedDay = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("pt-PT", { day: "2-digit", month: "long", year: "numeric" });
+  };
+
+  if (loading) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-gray-50">
+        <Loader2 className="h-8 w-8 animate-spin text-[#052a5e]" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <DashboardHeader
         title="Gerenciar Reservas"
         showSearch
+        searchPlaceholder="Buscar por serviço..."
         actionButton={
-          <button className="flex items-center gap-2 rounded-lg bg-[#1e3a8a] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-900 transition-colors">
-            <Plus className="h-4 w-4" />
-            Nova Reserva
-          </button>
+          !isProvider ? (
+            <Link
+              href="/dashboard/services"
+              className="flex items-center gap-2 rounded-lg bg-[#1e3a8a] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-900 transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+              Nova Reserva
+            </Link>
+          ) : undefined
         }
       />
 
@@ -46,178 +129,158 @@ export default function ReservasPage() {
         
         {/* Tabs */}
         <div className="mb-6 flex border-b border-gray-200">
-          <Tab label="Próximas" badge={3} isActive />
-          <Tab label="Pendentes" badge={1} />
-          <Tab label="Concluídas" />
-          <Tab label="Canceladas" />
+          <button
+            onClick={() => setActiveTab("upcoming")}
+            className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
+              activeTab === "upcoming"
+                ? "border-[#1e3a8a] text-[#1e3a8a]"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            Próximas
+            <span className={`flex h-5 items-center justify-center rounded-full px-2 text-xs font-bold ${
+              activeTab === "upcoming" ? "bg-[#1e3a8a] text-white" : "bg-gray-100 text-gray-500"
+            }`}>
+              {upcomingBookings.length}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("pending")}
+            className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
+              activeTab === "pending"
+                ? "border-[#1e3a8a] text-[#1e3a8a]"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            Pendentes
+            <span className={`flex h-5 items-center justify-center rounded-full px-2 text-xs font-bold ${
+              activeTab === "pending" ? "bg-[#1e3a8a] text-white" : "bg-gray-100 text-gray-500"
+            }`}>
+              {pendingBookings.length}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("completed")}
+            className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
+              activeTab === "completed"
+                ? "border-[#1e3a8a] text-[#1e3a8a]"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            Concluídas
+            <span className={`flex h-5 items-center justify-center rounded-full px-2 text-xs font-bold ${
+              activeTab === "completed" ? "bg-[#1e3a8a] text-white" : "bg-gray-100 text-gray-500"
+            }`}>
+              {completedBookings.length}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("canceled")}
+            className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
+              activeTab === "canceled"
+                ? "border-[#1e3a8a] text-[#1e3a8a]"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            Canceladas
+            <span className={`flex h-5 items-center justify-center rounded-full px-2 text-xs font-bold ${
+              activeTab === "canceled" ? "bg-[#1e3a8a] text-white" : "bg-gray-100 text-gray-500"
+            }`}>
+              {canceledBookings.length}
+            </span>
+          </button>
         </div>
 
         <div className="grid grid-cols-1 items-start gap-8 xl:grid-cols-3">
           
           {/* ── Left Column: Booking List ── */}
-          <div className="xl:col-span-2 flex flex-col gap-8">
-            
-            {/* HOJE */}
-            <section>
-              <h3 className="mb-4 text-xs font-bold uppercase tracking-wider text-gray-400">
-                Hoje, 15 de Outubro
-              </h3>
-              <div className="flex flex-col gap-4">
-                
-                {/* Card 1 */}
-                <div className="flex flex-col sm:flex-row items-center gap-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                  {/* Time */}
-                  <div className="flex w-16 flex-col items-center justify-center sm:items-start">
-                    <span className="text-xl font-bold text-[#1e3a8a]">14:00</span>
-                    <span className="text-sm text-gray-400">16:00</span>
-                  </div>
-
-                  {/* Details */}
-                  <div className="flex flex-1 flex-col gap-2 border-l-2 border-blue-100 pl-6">
-                    <div className="flex items-start justify-between">
-                      <h4 className="text-base font-bold text-[#1e3a8a]">Reforma de Banheiro</h4>
-                      <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-600">
-                        Confirmado
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                      <div className="flex items-center gap-2">
-                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-700">
-                          J
-                        </div>
-                        <span className="font-medium text-gray-700">João Fernandes</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <MapPin className="h-4 w-4 text-gray-400" />
-                        Rua das Flores, 123
-                      </div>
-                      <div className="flex items-center gap-1.5 font-bold text-[#1e3a8a]">
-                        <Banknote className="h-4 w-4 text-gray-400" />
-                        KZ 450,00
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex w-full sm:w-auto flex-col gap-2 border-t border-gray-100 pt-4 sm:border-none sm:pt-0">
-                    <button className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-[#1e3a8a] transition-colors hover:bg-gray-50">
-                      Ver Detalhes
-                    </button>
-                    <button className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-[#1e3a8a] transition-colors hover:bg-blue-100">
-                      Iniciar
-                    </button>
-                  </div>
-                </div>
-
-                {/* Card 2 */}
-                <div className="flex flex-col sm:flex-row items-center gap-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                  {/* Time */}
-                  <div className="flex w-16 flex-col items-center justify-center sm:items-start">
-                    <span className="text-xl font-bold text-[#1e3a8a]">16:30</span>
-                    <span className="text-sm text-gray-400">18:00</span>
-                  </div>
-
-                  {/* Details */}
-                  <div className="flex flex-1 flex-col gap-2 border-l-2 border-blue-100 pl-6">
-                    <div className="flex items-start justify-between">
-                      <h4 className="text-base font-bold text-[#1e3a8a]">Orçamento Presencial</h4>
-                      <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-600">
-                        Confirmado
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                      <div className="flex items-center gap-2">
-                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-100 text-xs font-bold text-amber-700">
-                          M
-                        </div>
-                        <span className="font-medium text-gray-700">Marta Oliveira</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <MapPin className="h-4 w-4 text-gray-400" />
-                        Av. Central, 45
-                      </div>
-                      <div className="flex items-center gap-1.5 font-bold text-[#1e3a8a]">
-                        <Banknote className="h-4 w-4 text-gray-400" />
-                        Grátis
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex w-full sm:w-auto flex-col justify-center border-t border-gray-100 pt-4 sm:border-none sm:pt-0">
-                    <button className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-[#1e3a8a] transition-colors hover:bg-gray-50">
-                      Ver Detalhes
-                    </button>
-                  </div>
-                </div>
-
+          <div className="xl:col-span-2 flex flex-col gap-6">
+            {displayList.length === 0 ? (
+              <div className="rounded-2xl border border-gray-100 bg-white p-12 text-center text-gray-500 font-medium">
+                Nenhuma reserva encontrada nesta categoria.
               </div>
-            </section>
+            ) : (
+              displayList.map((booking) => {
+                const displayName = isProvider
+                  ? booking.client?.fullName || "Cliente Geral"
+                  : booking.service?.name || "Serviço Geral";
+                const displayDetail = isProvider
+                  ? booking.service?.name || "Serviço Geral"
+                  : "Reserva Agendada";
 
-            {/* AMANHÃ */}
-            <section>
-              <h3 className="mb-4 text-xs font-bold uppercase tracking-wider text-gray-400">
-                Amanhã, 16 de Outubro
-              </h3>
-              <div className="flex flex-col gap-4">
+                const scheduledTime = getFormattedTime(booking.scheduledAt);
+                const scheduledDay = getFormattedDay(booking.scheduledAt);
+
+                let statusLabel = "Pendente";
+                let statusClass = "bg-amber-50 text-amber-600";
                 
-                {/* Card 3 */}
-                <div className="flex flex-col sm:flex-row items-center gap-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                  {/* Time */}
-                  <div className="flex w-16 flex-col items-center justify-center sm:items-start">
-                    <span className="text-xl font-bold text-[#1e3a8a]">09:00</span>
-                    <span className="text-sm text-gray-400">12:00</span>
-                  </div>
+                if (booking.status === "COMPLETED") {
+                  statusLabel = "Confirmado";
+                  statusClass = "bg-blue-50 text-blue-600";
+                } else if (booking.status === "CANCELED") {
+                  statusLabel = "Cancelado";
+                  statusClass = "bg-red-50 text-red-600";
+                }
 
-                  {/* Details */}
-                  <div className="flex flex-1 flex-col gap-2 border-l-2 border-orange-100 pl-6">
-                    <div className="flex items-start justify-between">
-                      <h4 className="text-base font-bold text-[#1e3a8a]">Troca de Piso (Sala)</h4>
-                      <span className="rounded-full bg-orange-50 px-2.5 py-0.5 text-xs font-semibold text-orange-600">
-                        Aguardando Confirmação
-                      </span>
+                return (
+                  <div key={booking.id} className="flex flex-col sm:flex-row items-center gap-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm hover:border-gray-200 transition-all">
+                    
+                    {/* Time */}
+                    <div className="flex w-24 flex-col items-center justify-center sm:items-start border-r border-gray-100 pr-4">
+                      <span className="text-lg font-bold text-[#1e3a8a]">{scheduledTime}</span>
+                      <span className="text-xs text-gray-400 font-bold">{scheduledDay.split(" de ")[0]} {scheduledDay.split(" de ")[1]}</span>
                     </div>
-                    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                      <div className="flex items-center gap-2">
-                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-100 text-xs font-bold text-rose-700">
-                          A
+
+                    {/* Details */}
+                    <div className="flex flex-1 flex-col gap-2 pl-2">
+                      <div className="flex items-start justify-between">
+                        <h4 className="text-base font-bold text-[#1e3a8a]">{displayName}</h4>
+                        <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusClass}`}>
+                          {statusLabel}
+                        </span>
+                      </div>
+                      
+                      <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500 mt-1 font-medium">
+                        <span className="text-gray-700">{displayDetail}</span>
+                        <div className="flex items-center gap-1">
+                          <MapPin className="h-3.5 w-3.5 text-gray-400" />
+                          A combinar
                         </div>
-                        <span className="font-medium text-gray-700">Ana Costa</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <MapPin className="h-4 w-4 text-gray-400" />
-                        Rua das Acácias, 88
-                      </div>
-                      <div className="flex items-center gap-1.5 font-bold text-[#1e3a8a]">
-                        <Banknote className="h-4 w-4 text-gray-400" />
-                        KZ 850,00
+                        <div className="flex items-center gap-1 font-bold text-[#1e3a8a]">
+                          <Banknote className="h-3.5 w-3.5 text-gray-400" />
+                          KZ {(booking.service?.price || 0).toLocaleString("pt-PT", { minimumFractionDigits: 2 })}
+                        </div>
                       </div>
                     </div>
+
+                    {/* Actions */}
+                    <div className="flex w-full sm:w-auto flex-col gap-2 border-t border-gray-100 pt-4 sm:border-none sm:pt-0">
+                      {!isProvider && booking.status === "PENDING" && (
+                        <button
+                          onClick={() => handleCancel(booking.id)}
+                          className="flex items-center justify-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-xs font-bold text-red-600 transition-colors hover:bg-red-100"
+                        >
+                          <XCircle className="h-4 w-4" />
+                          Cancelar
+                        </button>
+                      )}
+                    </div>
                   </div>
-
-                  {/* Actions */}
-                  <div className="flex w-full sm:w-auto flex-col gap-2 border-t border-gray-100 pt-4 sm:border-none sm:pt-0">
-                    <button className="rounded-lg bg-[#1e3a8a] px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-900">
-                      Confirmar
-                    </button>
-                    <button className="rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-red-500 transition-colors hover:bg-red-50">
-                      Recusar
-                    </button>
-                  </div>
-                </div>
-
-              </div>
-            </section>
-
+                );
+              })
+            )}
           </div>
 
           {/* ── Right Column: Calendar & Summary ── */}
           <div className="flex flex-col gap-6">
             
-            {/* Calendar */}
+            {/* Calendar Card */}
             <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
               <div className="mb-4 flex items-center justify-between">
-                <h3 className="font-bold text-[#1e3a8a]">Outubro 2023</h3>
+                <h3 className="font-bold text-[#1e3a8a]">Calendário</h3>
                 <div className="flex gap-2">
                   <button className="text-gray-400 hover:text-[#1e3a8a]"><ChevronLeft className="h-5 w-5" /></button>
                   <button className="text-gray-400 hover:text-[#1e3a8a]"><ChevronRight className="h-5 w-5" /></button>
@@ -225,59 +288,56 @@ export default function ReservasPage() {
               </div>
               
               <div className="grid grid-cols-7 gap-y-3 text-center text-sm">
-                {/* Days of week */}
                 {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map((d, i) => (
                   <div key={i} className="font-semibold text-gray-400 text-xs">{d}</div>
                 ))}
                 
-                {/* Mock dates */}
                 {Array.from({ length: 31 }, (_, i) => i + 1).map(day => {
-                  const isToday = day === 15;
-                  const hasPending = day === 16;
-                  const hasConfirmed = day === 21;
-                  
+                  const isToday = day === now.getDate();
                   return (
                     <div key={day} className="flex flex-col items-center justify-center">
                       <span
-                        className={`flex h-8 w-8 items-center justify-center rounded-full text-sm ${
+                        className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${
                           isToday
-                            ? "bg-[#1e3a8a] font-bold text-white shadow-md"
-                            : "text-[#1e3a8a] font-medium hover:bg-gray-100 cursor-pointer"
+                            ? "bg-[#1e3a8a] text-white shadow-md"
+                            : "text-[#1e3a8a] hover:bg-gray-100 cursor-pointer"
                         }`}
                       >
                         {day}
                       </span>
-                      {hasPending && <span className="mt-0.5 h-1 w-1 rounded-full bg-orange-400"></span>}
-                      {hasConfirmed && <span className="mt-0.5 h-1 w-1 rounded-full bg-blue-500"></span>}
                     </div>
                   );
                 })}
               </div>
             </div>
 
-            {/* Resumo da Semana */}
+            {/* Weekly/All Summary */}
             <div className="rounded-2xl border border-blue-50 bg-blue-50/50 p-6 shadow-sm">
-              <h3 className="mb-5 font-bold text-[#1e3a8a]">Resumo da Semana</h3>
+              <h3 className="mb-5 font-bold text-[#1e3a8a]">Resumo de Atividades</h3>
               
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Reservas Confirmadas</span>
-                  <span className="font-bold text-[#1e3a8a]">8</span>
+                  <span className="text-gray-500 font-medium">Reservas Confirmadas</span>
+                  <span className="font-bold text-[#1e3a8a]">{statsConfirmed}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Aguardando Confirmação</span>
-                  <span className="font-bold text-orange-500">2</span>
+                  <span className="text-gray-500 font-medium">Aguardando Confirmação</span>
+                  <span className="font-bold text-amber-600">{statsPending}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Cancelamentos</span>
-                  <span className="font-bold text-red-500">0</span>
+                  <span className="text-gray-500 font-medium">Cancelamentos</span>
+                  <span className="font-bold text-red-500">{statsCanceled}</span>
                 </div>
                 
                 <div className="my-2 border-t border-blue-100"></div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-[#1e3a8a]">Ganhos Previstos</span>
-                  <span className="text-lg font-bold text-[#1e3a8a]">KZ 2.450,00</span>
+                  <span className="text-sm font-bold text-[#1e3a8a]">
+                    {isProvider ? "Ganhos Acumulados" : "Pagamentos Previstos"}
+                  </span>
+                  <span className="text-lg font-bold text-[#1e3a8a]">
+                    KZ {totalValue.toLocaleString("pt-PT", { minimumFractionDigits: 2 })}
+                  </span>
                 </div>
               </div>
             </div>

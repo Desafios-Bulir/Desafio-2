@@ -36,6 +36,8 @@ export default function LoginPage() {
         id: response.user.id,
         fullName: response.user.fullName,
         role: response.user.role,
+        email: response.user.email,
+        phone: response.user.phone,
       });
 
       toast.success(`Bem-vindo de volta, ${response.user.fullName}!`);

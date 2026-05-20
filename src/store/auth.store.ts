@@ -4,7 +4,10 @@ interface User {
   id: string;
   fullName: string;
   role: "CLIENT" | "PROVIDER";
+  email: string;
+  phone?: string;
 }
+
 
 interface AuthStore {
   token: string | null;

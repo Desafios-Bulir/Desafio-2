@@ -183,14 +183,14 @@ export default function EditServicePage() {
               <div className="mt-4 flex items-center justify-end gap-3 border-t border-gray-100 pt-6">
                 <Link
                   href="/dashboard/services"
-                  className="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all active:scale-95 cursor-pointer"
                 >
                   Cancelar
                 </Link>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex items-center gap-2 rounded-xl bg-[#052a5e] px-6 py-3 text-sm font-bold text-white shadow-md hover:bg-[#031b3e] transition-all active:scale-[0.99] disabled:opacity-50"
+                  className="flex items-center gap-2 rounded-xl bg-[#052a5e] px-6 py-3 text-sm font-bold text-white shadow-md hover:bg-[#031b3e] transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
                 >
                   {loading ? (
                     <>

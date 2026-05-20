@@ -17,6 +17,7 @@ export default function ServicesPage() {
 
   const [servicesList, setServicesList] = useState<ServiceResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   
   const [balance, setBalance] = useState<number | null>(null);
   const [selectedService, setSelectedService] = useState<ServiceResponse | null>(null);
@@ -54,12 +55,19 @@ export default function ServicesPage() {
   async function handleDelete(id: string) {
     if (!confirm("Tem a certeza que deseja eliminar este serviço?")) return;
     try {
+      setDeletingId(id);
       await servicesService.delete(id);
       toast.success("Serviço eliminado com sucesso!");
       setServicesList((prev) => prev.filter((s) => s.id !== id));
-    } catch (error) {
-      console.error("Erro ao eliminar serviço:", error);
-      toast.error("Erro ao eliminar o serviço.");
+    } catch (error: any) {
+      console.error("Erro completo ao eliminar serviço:", error);
+      const errorMsg = 
+        error?.response?.data?.message || 
+        error?.message || 
+        "Erro ao eliminar o serviço.";
+      toast.error(Array.isArray(errorMsg) ? errorMsg[0] : errorMsg);
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -237,17 +245,22 @@ export default function ServicesPage() {
                             <>
                               <Link
                                 href={`/dashboard/services/edit/${service.id}`}
-                                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-500"
+                                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-all hover:bg-blue-50 hover:text-blue-500 active:scale-95 cursor-pointer"
                                 title="Editar Serviço"
                               >
                                 <Edit2 className="h-4 w-4" />
                               </Link>
                               <button
                                 onClick={() => handleDelete(service.id)}
-                                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+                                disabled={deletingId === service.id}
+                                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-all hover:bg-red-50 hover:text-red-500 disabled:opacity-50 active:scale-95 cursor-pointer"
                                 title="Excluir Serviço"
                               >
-                                <Trash2 className="h-4 w-4" />
+                                {deletingId === service.id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin text-red-500" />
+                                ) : (
+                                  <Trash2 className="h-4 w-4" />
+                                )}
                               </button>
                             </>
                           ) : (
@@ -259,7 +272,7 @@ export default function ServicesPage() {
                                 setScheduledDate(tomorrow.toISOString().split("T")[0]);
                                 setScheduledTime("10:00");
                               }}
-                              className="rounded-lg bg-[#052a5e] px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-[#031b3e] transition-colors"
+                              className="rounded-lg bg-[#052a5e] px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-[#031b3e] transition-all active:scale-95 cursor-pointer"
                             >
                               Contratar
                             </button>
@@ -348,14 +361,14 @@ export default function ServicesPage() {
             <div className="flex items-center justify-end gap-3 border-t border-gray-100 pt-4">
               <button
                 onClick={() => setSelectedService(null)}
-                className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all active:scale-95 cursor-pointer"
               >
                 Cancelar
               </button>
               <button
                 disabled={bookingLoading || (balance !== null && balance < selectedService.price) || !scheduledDate || !scheduledTime}
                 onClick={handleConfirmBooking}
-                className="flex items-center gap-2 rounded-xl bg-[#052a5e] px-5 py-2.5 text-sm font-bold text-white shadow-md hover:bg-[#031b3e] disabled:opacity-50"
+                className="flex items-center gap-2 rounded-xl bg-[#052a5e] px-5 py-2.5 text-sm font-bold text-white shadow-md hover:bg-[#031b3e] disabled:opacity-50 transition-all active:scale-95 cursor-pointer"
               >
                 {bookingLoading ? (
                   <>

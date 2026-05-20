@@ -44,6 +44,6 @@ export const servicesService = {
 
   delete: async (id: string) => {
     const response = await api.delete(`/api/v1/services/${id}`);
-    return response.data;
+    return response.data || { success: true };
   },
 };

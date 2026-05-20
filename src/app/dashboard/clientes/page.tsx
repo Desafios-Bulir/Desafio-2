@@ -49,7 +49,6 @@ export default function ClientesPage() {
         setLoading(true);
         const bookings = await bookingsService.getProviderBookings();
         
-        // Group bookings by client to compute unique clients
         const clientsMap: Record<string, ClientData> = {};
 
         bookings.forEach((booking) => {
@@ -71,7 +70,7 @@ export default function ClientesPage() {
               email: clientObj.email,
               phone: clientObj.phone || "Sem contacto",
               totalBookings: 0,
-              lastBooking: scheduledDate, // Since backend query has orderBy desc, first booking is the latest
+              lastBooking: scheduledDate,
             };
           }
 
@@ -173,7 +172,7 @@ export default function ClientesPage() {
                     return (
                       <tr key={client.id} className="hover:bg-gray-50/50 transition-colors">
                         
-                        {/* Cliente */}
+                       
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <div
@@ -187,7 +186,7 @@ export default function ClientesPage() {
                           </div>
                         </td>
 
-                        {/* Contato */}
+                       
                         <td className="px-6 py-4">
                           <div className="flex flex-col gap-1 text-gray-500">
                             <div className="flex items-center gap-1.5">
@@ -203,14 +202,13 @@ export default function ClientesPage() {
                           </div>
                         </td>
 
-                        {/* Reservas */}
+                       
                         <td className="px-6 py-4">
                           <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-50 text-xs font-bold text-blue-600">
                             {client.totalBookings}
                           </span>
                         </td>
 
-                        {/* Última Reserva */}
                         <td className="px-6 py-4 text-gray-500">
                           {client.lastBooking}
                         </td>

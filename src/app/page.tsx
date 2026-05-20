@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 
 
-// --- Star Rating ---
 function StarRating({ count = 5 }: { count?: number }) {
   return (
     <div className="flex gap-0.5">
@@ -24,7 +23,6 @@ function StarRating({ count = 5 }: { count?: number }) {
   );
 }
 
-// --- Avatar Group ---
 function AvatarGroup() {
   const colors = ["bg-[#052a5e]", "bg-teal-400", "bg-indigo-400"];
   const initials = ["G", "B", "D"];
@@ -42,7 +40,7 @@ function AvatarGroup() {
   );
 }
 
-// --- Main Page ---
+//Main
 export default function Home() {
   return (
     <main className="min-h-screen bg-white">

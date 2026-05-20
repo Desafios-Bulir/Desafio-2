@@ -48,7 +48,6 @@ export default function RegisterPage() {
           ? await authService.registerClient(payload)
           : await authService.registerProvider(payload);
 
-      // Salvar token e usuário no store
       setAuth(response.access_token, {
         id: response.user.id,
         fullName: response.user.fullName,

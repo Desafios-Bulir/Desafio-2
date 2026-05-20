@@ -8,7 +8,7 @@ import { useAuthStore } from "@/store/auth.store";
 import { servicesService, ServiceResponse } from "@/services/services.service";
 import { bookingsService } from "@/services/bookings.service";
 import { walletService } from "@/services/wallet.service";
-import { Briefcase, Plus, Star, Wrench, Clock, Trash2, Loader2 } from "lucide-react";
+import { Briefcase, Plus, Star, Wrench, Clock, Trash2, Loader2, Edit2 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function ServicesPage() {
@@ -18,7 +18,6 @@ export default function ServicesPage() {
   const [servicesList, setServicesList] = useState<ServiceResponse[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // Client balance & booking modal states
   const [balance, setBalance] = useState<number | null>(null);
   const [selectedService, setSelectedService] = useState<ServiceResponse | null>(null);
   const [scheduledDate, setScheduledDate] = useState("");
@@ -67,7 +66,6 @@ export default function ServicesPage() {
   async function handleConfirmBooking() {
     if (!selectedService) return;
 
-    // Combine date and time
     const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
     if (scheduledDateTime < new Date()) {
       toast.error("A data e hora do agendamento não pode ser no passado.");
@@ -83,7 +81,6 @@ export default function ServicesPage() {
       
       toast.success("Serviço contratado com sucesso!");
       
-      // Update local client balance
       if (balance !== null) {
         setBalance((prev) => (prev !== null ? prev - selectedService.price : null));
       }
@@ -237,13 +234,22 @@ export default function ServicesPage() {
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
                           {isProvider ? (
-                            <button
-                              onClick={() => handleDelete(service.id)}
-                              className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
-                              title="Excluir Serviço"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
+                            <>
+                              <Link
+                                href={`/dashboard/services/edit/${service.id}`}
+                                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-500"
+                                title="Editar Serviço"
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </Link>
+                              <button
+                                onClick={() => handleDelete(service.id)}
+                                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+                                title="Excluir Serviço"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </>
                           ) : (
                             <button
                               onClick={() => {

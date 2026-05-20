@@ -86,7 +86,7 @@ export default function DashboardPage() {
     bookings.map((b) => b.clientId).filter(Boolean)
   ).size;
 
-  // Limit to 5 upcoming bookings
+  // Limit 5 
   const upcomingBookings = bookings.slice(0, 5);
 
   if (loading) {
@@ -105,7 +105,7 @@ export default function DashboardPage() {
         searchPlaceholder="Buscar reservas..."
       />
 
-      {/* Scrollable body */}
+     
       <div className="flex-1 overflow-y-auto px-6 py-6">
 
         {/* Greeting Row */}
@@ -157,7 +157,7 @@ export default function DashboardPage() {
           />
         </div>
 
-        {/* Upcoming Bookings */}
+       
         <div className="rounded-2xl border border-gray-100 bg-white shadow-sm">
           <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
             <h3 className="text-base font-bold text-gray-900">

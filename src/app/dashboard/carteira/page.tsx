@@ -44,7 +44,6 @@ export default function CarteiraPage() {
     loadWalletData();
   }, []);
 
-  // Compute monthly calculations (Credits for provider, Debits for client)
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
   
@@ -60,7 +59,6 @@ export default function CarteiraPage() {
     })
     .reduce((sum, tx) => sum + tx.amount, 0);
 
-  // Filter transactions based on selection
   const filteredTransactions = transactions.filter((tx) => {
     if (filter === "all") return true;
     return tx.type === filter;
@@ -78,15 +76,13 @@ export default function CarteiraPage() {
     <div className="flex flex-1 flex-col overflow-hidden bg-gray-50">
       <DashboardHeader title="Minha Carteira" />
 
-      {/* Scrollable body */}
       <div className="flex-1 overflow-y-auto px-6 py-6">
         
         {/* Top Cards Grid */}
         <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
           
-          {/* Main Balance Card */}
           <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl bg-gradient-to-br from-[#052a5e] to-blue-900 p-8 text-white shadow-sm lg:col-span-2">
-            {/* Background Decoration */}
+          
             <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/5 blur-3xl"></div>
             
             <div className="relative z-10 flex items-start justify-between">

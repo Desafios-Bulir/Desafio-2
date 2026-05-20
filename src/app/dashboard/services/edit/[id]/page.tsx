@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { useAuthStore } from "@/store/auth.store";
@@ -9,11 +9,14 @@ import { servicesService } from "@/services/services.service";
 import { ArrowLeft, Save, FileText, Wrench, DollarSign, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-export default function NewServicePage() {
+export default function EditServicePage() {
   const router = useRouter();
+  const params = useParams();
+  const serviceId = params.id as string;
   const user = useAuthStore((state) => state.user);
 
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -26,8 +29,40 @@ export default function NewServicePage() {
     }
   }, [user, router]);
 
+  useEffect(() => {
+    async function loadService() {
+      try {
+        setInitialLoading(true);
+        const service = await servicesService.getById(serviceId);
+        setFormData({
+          name: service.name,
+          description: service.description,
+          price: service.price.toString(),
+        });
+      } catch (error) {
+        console.error("Erro ao carregar serviço:", error);
+        toast.error("Erro ao carregar os dados do serviço.");
+        router.push("/dashboard/services");
+      } finally {
+        setInitialLoading(false);
+      }
+    }
+
+    if (user && user.role === "PROVIDER") {
+      loadService();
+    }
+  }, [user, serviceId, router]);
+
   if (!user || user.role !== "PROVIDER") {
     return null;
+  }
+
+  if (initialLoading) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-gray-50">
+        <Loader2 className="h-8 w-8 animate-spin text-[#052a5e]" />
+      </div>
+    );
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -42,17 +77,17 @@ export default function NewServicePage() {
         return;
       }
 
-      await servicesService.create({
+      await servicesService.update(serviceId, {
         name: formData.name,
         description: formData.description,
         price: priceNum,
       });
 
-      toast.success("Serviço criado com sucesso!");
+      toast.success("Serviço atualizado com sucesso!");
       router.push("/dashboard/services");
     } catch (error: any) {
-      console.error("Erro ao criar serviço:", error);
-      const errorMsg = error.response?.data?.message || "Ocorreu um erro ao criar o serviço.";
+      console.error("Erro ao atualizar serviço:", error);
+      const errorMsg = error.response?.data?.message || "Ocorreu um erro ao atualizar o serviço.";
       toast.error(Array.isArray(errorMsg) ? errorMsg[0] : errorMsg);
     } finally {
       setLoading(false);
@@ -62,7 +97,7 @@ export default function NewServicePage() {
   return (
     <div className="flex flex-1 flex-col overflow-hidden bg-gray-50">
       <DashboardHeader 
-        title="Criar Novo Serviço" 
+        title="Editar Serviço" 
         actionButton={
           <Link 
             href="/dashboard/services" 
@@ -79,8 +114,8 @@ export default function NewServicePage() {
           
           <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
             <div className="mb-6 border-b border-gray-100 pb-5">
-              <h3 className="text-lg font-bold text-gray-900">Detalhes do Serviço</h3>
-              <p className="text-sm text-gray-500 mt-1">Preencha as informações para registar um novo serviço no seu catálogo.</p>
+              <h3 className="text-lg font-bold text-gray-900">Editar Detalhes do Serviço</h3>
+              <p className="text-sm text-gray-500 mt-1">Atualize as informações do seu serviço.</p>
             </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -160,12 +195,12 @@ export default function NewServicePage() {
                   {loading ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      A criar...
+                      A atualizar...
                     </>
                   ) : (
                     <>
                       <Save className="h-4 w-4" />
-                      Criar Serviço
+                      Atualizar Serviço
                     </>
                   )}
                 </button>

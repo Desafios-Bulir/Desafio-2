@@ -50,7 +50,6 @@ export default function ReservasPage() {
     try {
       await bookingsService.cancelBooking(id);
       toast.success("Reserva cancelada com sucesso!");
-      // Update local state to mark booking as CANCELED
       setBookings((prev) =>
         prev.map((b) => (b.id === id ? { ...b, status: "CANCELED" } : b))
       );
@@ -60,7 +59,6 @@ export default function ReservasPage() {
     }
   }
 
-  // Grouping bookings based on status/dates
   const now = new Date();
   
   const upcomingBookings = bookings.filter(
@@ -71,19 +69,19 @@ export default function ReservasPage() {
   const completedBookings = bookings.filter((b) => b.status === "COMPLETED");
   const canceledBookings = bookings.filter((b) => b.status === "CANCELED");
 
-  // Determine which list to display
+
   let displayList: BookingResponse[] = [];
   if (activeTab === "upcoming") displayList = upcomingBookings;
   else if (activeTab === "pending") displayList = pendingBookings;
   else if (activeTab === "completed") displayList = completedBookings;
   else if (activeTab === "canceled") displayList = canceledBookings;
 
-  // Weekly stats calculation
+
   const statsConfirmed = completedBookings.length;
   const statsPending = pendingBookings.length;
   const statsCanceled = canceledBookings.length;
   
-  // Calculate total expected earnings/payments
+
   const totalValue = bookings
     .filter((b) => b.status === "COMPLETED" || b.status === "PENDING")
     .reduce((sum, b) => sum + (b.service?.price || 0), 0);
@@ -274,7 +272,7 @@ export default function ReservasPage() {
             )}
           </div>
 
-          {/* ── Right Column: Calendar & Summary ── */}
+    
           <div className="flex flex-col gap-6">
             
             {/* Calendar Card */}
@@ -311,7 +309,7 @@ export default function ReservasPage() {
               </div>
             </div>
 
-            {/* Weekly/All Summary */}
+           
             <div className="rounded-2xl border border-blue-50 bg-blue-50/50 p-6 shadow-sm">
               <h3 className="mb-5 font-bold text-[#1e3a8a]">Resumo de Atividades</h3>
               

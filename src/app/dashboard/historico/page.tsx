@@ -40,12 +40,11 @@ export default function HistoricoPage() {
     loadHistory();
   }, [isProvider]);
 
-  // Statistics
+ 
   const completedCount = bookings.filter((b) => b.status === "COMPLETED").length;
   const canceledCount = bookings.filter((b) => b.status === "CANCELED").length;
   const pendingCount = bookings.filter((b) => b.status === "PENDING").length;
 
-  // Filtered list
   const filteredBookings = bookings.filter((b) => {
     if (filter === "all") return true;
     return b.status === filter;
@@ -97,9 +96,8 @@ export default function HistoricoPage() {
           />
         </div>
 
-        {/* History Table */}
+        
         <div className="rounded-2xl border border-gray-100 bg-white shadow-sm">
-          {/* Header */}
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 px-6 py-5">
             <h3 className="text-lg font-bold text-[#052a5e]">Todos os Serviços</h3>
             
@@ -188,19 +186,18 @@ export default function HistoricoPage() {
                     return (
                       <tr key={booking.id} className="hover:bg-gray-50/50 transition-colors">
                         
-                        {/* Data */}
+                        
                         <td className="px-6 py-4 text-gray-500 font-medium">
                           {scheduledDate}
                         </td>
 
-                        {/* Serviço */}
                         <td className="px-6 py-4">
                           <p className="font-semibold text-gray-900">
                             {booking.service?.name || "Serviço Geral"}
                           </p>
                         </td>
 
-                        {/* Outra Parte */}
+                       
                         <td className="px-6 py-4 text-gray-600 font-medium">
                           {otherParty}
                         </td>

@@ -11,8 +11,8 @@ export default function PerfilPage() {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: user?.fullName || "",
-    email: user?.email || "", // we don't have email in store user yet, let's check
-    phone: "", // we will load it or leave as editable mock
+    email: user?.email || "", 
+    phone: "",
   });
 
   const displayName = user?.fullName || "Utilizador";
@@ -59,10 +59,10 @@ export default function PerfilPage() {
             </div>
           </div>
 
-          {/* Duas colunas */}
+    
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             
-            {/* Coluna Dados Pessoais (Form) */}
+        
             <div className="md:col-span-2 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
               <h3 className="mb-5 text-base font-bold text-gray-900">Informações Pessoais</h3>
               
@@ -130,10 +130,8 @@ export default function PerfilPage() {
               </form>
             </div>
 
-            {/* Coluna Resumo Finanças / Ações adicionais */}
             <div className="flex flex-col gap-6">
               
-              {/* Card de Carteira */}
               <div className="rounded-2xl border border-white/60 bg-gradient-to-br from-[#052a5e] to-blue-900 p-6 text-white shadow-sm">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 text-white">

@@ -31,7 +31,6 @@ export default function LoginPage() {
     try {
       const response = await authService.login(formData);
 
-      // Salvar token e usuário no store
       setAuth(response.access_token, {
         id: response.user.id,
         fullName: response.user.fullName,

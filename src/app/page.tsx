@@ -106,7 +106,7 @@ export default function Home() {
               <div className="relative z-10 w-full max-w-[500px]">
                 <Image
                   src="/phone.png"
-                  alt="ServiFind app — encontre profissionais perto de você"
+                  alt="ServiceFind app — encontre profissionais perto de você"
                   width={700}
                   height={450}
                   className="w-full drop-shadow-2xl"
@@ -201,7 +201,7 @@ export default function Home() {
                 <div>
                   <StarRating count={4} />
                   <p className="mt-4 text-sm italic leading-relaxed text-gray-600">
-                    "Nunca foi tão fácil encontrar alguém de confiança para o meu cabelo. O ServiFind facilitou muito minha vida."
+                    "Nunca foi tão fácil encontrar alguém de confiança para o meu cabelo. O ServiceFind facilitou muito minha vida."
                   </p>
                 </div>
                 <div className="mt-6 flex items-center gap-3">
@@ -269,7 +269,7 @@ export default function Home() {
             Pronto para começar?
           </h2>
           <p className="mt-4 text-blue-100 text-lg max-w-xl mx-auto">
-            Junte-se a milhares de profissionais e clientes que já usam o ServiFind.
+            Junte-se a milhares de profissionais e clientes que já usam o ServiceFind.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <Link

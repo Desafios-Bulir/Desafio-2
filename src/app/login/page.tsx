@@ -148,7 +148,7 @@ export default function LoginPage() {
                     Iniciando sessão...
                   </>
                 ) : (
-                  "Entrar no ServiFind"
+                  "Entrar"
                 )}
               </button>
             </form>

@@ -14,7 +14,7 @@ export default function Footer() {
               <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600 text-white">
                 <Smartphone className="h-4 w-4" />
               </div>
-              <span className="text-lg font-bold text-white">ServiFind</span>
+              <span className="text-lg font-bold text-white">ServiceFind</span>
             </div>
             <p className="text-sm text-gray-400">
               A sua plataforma de confiança para encontrar e oferecer serviços rapidamente.
@@ -61,7 +61,7 @@ export default function Footer() {
 
         <div className="pt-8 border-t border-gray-900 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-gray-500">
-            © {currentYear} ServiFind. Todos os direitos reservados.
+            © {currentYear} ServiceFind. Todos os direitos reservados.
           </p>
           <div className="flex gap-4 text-xs text-gray-500">
             <a href="#" className="hover:text-white transition-colors">Termos de Uso</a>

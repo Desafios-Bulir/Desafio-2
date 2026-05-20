@@ -152,7 +152,7 @@ export default function PerfilPage() {
                   Se tem dúvidas sobre o funcionamento da plataforma ou necessita de alterar dados críticos da sua conta, contacte a nossa equipa de suporte.
                 </p>
                 <a 
-                  href="mailto:suporte@servifind.com" 
+                  href="mailto:fernandochipombo@gmail.com" 
                   className="inline-flex w-full items-center justify-center rounded-xl border border-gray-200 bg-white py-2.5 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   Contactar Suporte

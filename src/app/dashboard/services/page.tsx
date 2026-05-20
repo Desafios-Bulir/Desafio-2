@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { useAuthStore } from "@/store/auth.store";
@@ -75,10 +76,10 @@ export default function ServicesPage() {
         searchPlaceholder="Buscar serviços..."
         actionButton={
           isProvider ? (
-            <button className="flex items-center gap-2 rounded-lg bg-[#1e3a8a] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-900 transition-colors">
+            <Link href="/dashboard/services/new" className="flex items-center gap-2 rounded-lg bg-[#1e3a8a] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-900 transition-colors">
               <Plus className="h-4 w-4" />
               Novo Serviço
-            </button>
+            </Link>
           ) : undefined
         }
       />

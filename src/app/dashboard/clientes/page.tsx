@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/auth.store";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { Users, UserPlus, Star, Mail, Phone, MessageSquare, MoreHorizontal } from "lucide-react";
@@ -63,6 +66,19 @@ const avatarColors: Record<string, string> = {
 };
 
 export default function ClientesPage() {
+  const user = useAuthStore((state) => state.user);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user && user.role !== "PROVIDER") {
+      router.push("/dashboard");
+    }
+  }, [user, router]);
+
+  if (!user || user.role !== "PROVIDER") {
+    return null;
+  }
+
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <DashboardHeader

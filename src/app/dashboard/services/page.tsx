@@ -2,6 +2,7 @@
 
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { StatCard } from "@/components/dashboard/StatCard";
+import { useAuthStore } from "@/store/auth.store";
 import { Briefcase, Plus, Star, Search, Wrench, Clock, Edit3, Trash2, Power } from "lucide-react";
 
 // ── Types ──
@@ -63,17 +64,22 @@ const services: Service[] = [
 ];
 
 export default function ServicesPage() {
+  const user = useAuthStore((state) => state.user);
+  const isProvider = user?.role === "PROVIDER";
+
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <DashboardHeader
-        title="Meus Serviços"
+        title={isProvider ? "Meus Serviços" : "Serviços Disponíveis"}
         showSearch
         searchPlaceholder="Buscar serviços..."
         actionButton={
-          <button className="flex items-center gap-2 rounded-lg bg-[#1e3a8a] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-900 transition-colors">
-            <Plus className="h-4 w-4" />
-            Novo Serviço
-          </button>
+          isProvider ? (
+            <button className="flex items-center gap-2 rounded-lg bg-[#1e3a8a] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-900 transition-colors">
+              <Plus className="h-4 w-4" />
+              Novo Serviço
+            </button>
+          ) : undefined
         }
       />
 
@@ -121,7 +127,7 @@ export default function ServicesPage() {
                   <th className="px-6 py-4 font-semibold uppercase tracking-wider text-gray-400 text-xs">Preço</th>
                   <th className="px-6 py-4 font-semibold uppercase tracking-wider text-gray-400 text-xs">Duração</th>
                   <th className="px-6 py-4 font-semibold uppercase tracking-wider text-gray-400 text-xs">Status</th>
-                  <th className="px-6 py-4 text-right font-semibold uppercase tracking-wider text-gray-400 text-xs">Ações</th>
+                  {isProvider && <th className="px-6 py-4 text-right font-semibold uppercase tracking-wider text-gray-400 text-xs">Ações</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -178,32 +184,34 @@ export default function ServicesPage() {
                     </td>
 
                     {/* Ações */}
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
-                          title="Editar Serviço"
-                        >
-                          <Edit3 className="h-4 w-4" />
-                        </button>
-                        <button
-                          className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
-                            service.status === 'Ativo' 
-                              ? 'text-gray-400 hover:bg-amber-50 hover:text-amber-600'
-                              : 'text-gray-400 hover:bg-green-50 hover:text-green-600'
-                          }`}
-                          title={service.status === 'Ativo' ? 'Desativar Serviço' : 'Ativar Serviço'}
-                        >
-                          <Power className="h-4 w-4" />
-                        </button>
-                        <button
-                          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
-                          title="Excluir Serviço"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
+                    {isProvider && (
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                            title="Editar Serviço"
+                          >
+                            <Edit3 className="h-4 w-4" />
+                          </button>
+                          <button
+                            className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
+                              service.status === 'Ativo' 
+                                ? 'text-gray-400 hover:bg-amber-50 hover:text-amber-600'
+                                : 'text-gray-400 hover:bg-green-50 hover:text-green-600'
+                            }`}
+                            title={service.status === 'Ativo' ? 'Desativar Serviço' : 'Ativar Serviço'}
+                          >
+                            <Power className="h-4 w-4" />
+                          </button>
+                          <button
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+                            title="Excluir Serviço"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    )}
 
                   </tr>
                 ))}

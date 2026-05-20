@@ -2,19 +2,10 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Smartphone, LayoutDashboard, Users, CalendarDays, Wallet, History, LogOut, Briefcase, X } from "lucide-react";
+import { Smartphone, LayoutDashboard, Users, User, CalendarDays, Wallet, History, LogOut, Briefcase, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/contexts/SidebarContext";
 import { useAuthStore } from "@/store/auth.store";
-
-const navItems = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Clientes", href: "/dashboard/clientes", icon: Users },
-  { label: "Serviços", href: "/dashboard/services", icon: Briefcase },
-  { label: "Reservas", href: "/dashboard/reservas", icon: CalendarDays, badge: 3 },
-  { label: "Carteira", href: "/dashboard/carteira", icon: Wallet },
-  { label: "Histórico", href: "/dashboard/historico", icon: History },
-];
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -31,6 +22,17 @@ export function Sidebar() {
     logout();
     router.push("/login");
   };
+
+  const navItems = [
+    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+    user?.role === "PROVIDER"
+      ? { label: "Clientes", href: "/dashboard/clientes", icon: Users }
+      : { label: "Perfil", href: "/dashboard/perfil", icon: User },
+    { label: "Serviços", href: "/dashboard/services", icon: Briefcase },
+    { label: "Reservas", href: "/dashboard/reservas", icon: CalendarDays, badge: 3 },
+    { label: "Carteira", href: "/dashboard/carteira", icon: Wallet },
+    { label: "Histórico", href: "/dashboard/historico", icon: History },
+  ];
 
   return (
     <>
